@@ -2,6 +2,7 @@ package com.blog.tanylog.postLike;
 
 import com.blog.tanylog.post.Post;
 import com.blog.tanylog.user.User;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
