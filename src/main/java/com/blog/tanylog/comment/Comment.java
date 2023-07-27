@@ -2,7 +2,7 @@ package com.blog.tanylog.comment;
 
 import com.blog.tanylog.common.BaseEntity;
 import com.blog.tanylog.post.Post;
-import com.blog.tanylog.user.User;
+import com.blog.tanylog.user.domain.User;
 import java.util.ArrayList;
 import java.util.List;
 import javax.persistence.CascadeType;

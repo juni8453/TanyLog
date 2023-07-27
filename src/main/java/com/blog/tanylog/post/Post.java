@@ -1,7 +1,7 @@
 package com.blog.tanylog.post;
 
 import com.blog.tanylog.common.BaseEntity;
-import com.blog.tanylog.user.User;
+import com.blog.tanylog.user.domain.User;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

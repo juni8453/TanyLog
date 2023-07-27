@@ -1,7 +1,7 @@
 package com.blog.tanylog.commentLike;
 
 import com.blog.tanylog.comment.Comment;
-import com.blog.tanylog.user.User;
+import com.blog.tanylog.user.domain.User;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
