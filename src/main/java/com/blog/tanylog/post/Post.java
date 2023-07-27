@@ -1,5 +1,6 @@
 package com.blog.tanylog.post;
 
+import com.blog.tanylog.common.BaseEntity;
 import com.blog.tanylog.user.User;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Post {
+public class Post extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

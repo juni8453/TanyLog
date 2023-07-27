@@ -1,5 +1,6 @@
 package com.blog.tanylog.comment;
 
+import com.blog.tanylog.common.BaseEntity;
 import com.blog.tanylog.post.Post;
 import com.blog.tanylog.user.User;
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Comment {
+public class Comment extends BaseEntity {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
