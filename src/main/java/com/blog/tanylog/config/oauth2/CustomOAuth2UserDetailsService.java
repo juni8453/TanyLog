@@ -1,10 +1,12 @@
 package com.blog.tanylog.config.oauth2;
 
-import com.blog.tanylog.user.domain.Role;
+import com.blog.tanylog.config.oauth2.factory.OAuthFactory;
+import com.blog.tanylog.config.oauth2.providerType.CheckOAuthProvider;
+import com.blog.tanylog.config.oauth2.userinfo.OAuthUserInfo;
 import com.blog.tanylog.user.controller.dto.SessionUser;
+import com.blog.tanylog.user.domain.Role;
 import com.blog.tanylog.user.domain.User;
 import com.blog.tanylog.user.repository.UserRepository;
-import java.util.Map;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -21,7 +23,6 @@ public class CustomOAuth2UserDetailsService implements
 
   private final UserRepository userRepository;
   private User user;
-  private SessionUser sessionUser;
 
   @Override
   public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
@@ -29,57 +30,30 @@ public class CustomOAuth2UserDetailsService implements
     OAuth2User oAuth2User = delegate.loadUser(userRequest);
     String providerName = userRequest.getClientRegistration().getRegistrationId();
 
-    if (providerName.equals("naver")) {
-      // Naver 로그인 유저 정보 추출
-      Map<String, Object> response = (Map<String, Object>) oAuth2User.getAttributes().get("response");
-      String username = (String) response.get("nickname");
-      String profileImage = (String) response.get("profile_image");
-      String email = (String) response.get("email");
-      Role role = Role.USER;
+    // Naver + Kakao 리팩토링
+    CheckOAuthProvider oAuth2Provider = new OAuthFactory().getProvider(providerName);
+    OAuthUserInfo userInfo = oAuth2Provider.getUserInfo(oAuth2User);
 
-      // 가입된 유저인지 확인
-      Optional<User> findUser = userRepository.findByEmail(email);
+    String username = userInfo.username();
+    String profileImage = userInfo.profileImage();
+    String email = userInfo.email();
+    Role role = Role.USER;
 
-      if (findUser.isEmpty()) {
-        user = saveUserInfo(username, email, profileImage, role);
-      }
+    // 가입된 유저인지 확인
+    Optional<User> findUser = userRepository.findByEmail(email);
 
-      findUser.ifPresent(value -> user = value);
-
-      sessionUser = SessionUser.builder()
-          .username(username)
-          .email(email)
-          .picture(profileImage)
-          .role(role)
-          .build();
-
-    } else if (providerName.equals("kakao")) {
-      Map<String, Object> account = (Map<String, Object>) oAuth2User.getAttributes().get("kakao_account");
-      Map<String, Object> profile = (Map<String, Object>) account.get("profile");
-
-      String username = (String) profile.get("nickname");
-      String profileImage = (String) profile.get("profile_image_url");
-      String email = (String) account.get("email");
-      Role role = Role.USER;
-
-      // 가입된 유저인지 확인
-      Optional<User> findUser = userRepository.findByEmail(email);
-
-      if (findUser.isEmpty()) {
-        user = saveUserInfo(username, email, profileImage, role);
-      }
-
-      findUser.ifPresent(value -> user = value);
-
-      sessionUser = SessionUser.builder()
-          .username(username)
-          .email(email)
-          .picture(profileImage)
-          .role(role)
-          .build();
-
-      System.out.println();
+    if (findUser.isEmpty()) {
+      user = saveUserInfo(username, email, profileImage, role);
     }
+
+    findUser.ifPresent(value -> user = value);
+
+    SessionUser sessionUser = SessionUser.builder()
+        .username(username)
+        .email(email)
+        .picture(profileImage)
+        .role(role)
+        .build();
 
     return new UserContext(sessionUser, oAuth2User.getAttributes());
   }
