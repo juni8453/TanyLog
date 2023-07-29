@@ -34,6 +34,7 @@ public class CustomOAuth2UserDetailsService implements
     CheckOAuthProvider oAuth2Provider = new OAuthFactory().getProvider(providerName);
     OAuthUserInfo userInfo = oAuth2Provider.getUserInfo(oAuth2User);
 
+    String oauthId = userInfo.oauthId();
     String username = userInfo.username();
     String profileImage = userInfo.profileImage();
     String email = userInfo.email();
@@ -43,12 +44,13 @@ public class CustomOAuth2UserDetailsService implements
     Optional<User> findUser = userRepository.findByEmail(email);
 
     if (findUser.isEmpty()) {
-      user = saveUserInfo(username, email, profileImage, role);
+      user = saveUserInfo(oauthId, username, email, profileImage, role);
     }
 
     findUser.ifPresent(value -> user = value);
 
     SessionUser sessionUser = SessionUser.builder()
+        .oauthId(oauthId)
         .username(username)
         .email(email)
         .picture(profileImage)
@@ -58,8 +60,9 @@ public class CustomOAuth2UserDetailsService implements
     return new UserContext(sessionUser, oAuth2User.getAttributes());
   }
 
-  private User saveUserInfo(String username, String email, String profileImage, Role role) {
+  private User saveUserInfo(String oauthId, String username, String email, String profileImage, Role role) {
     User user = User.builder()
+        .oauthId(oauthId)
         .name(username)
         .email(email)
         .picture(profileImage)

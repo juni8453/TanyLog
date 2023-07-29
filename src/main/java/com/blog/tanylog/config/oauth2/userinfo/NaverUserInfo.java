@@ -11,6 +11,11 @@ public class NaverUserInfo implements OAuthUserInfo {
   }
 
   @Override
+  public String oauthId() {
+    return (String) response.get("id");
+  }
+
+  @Override
   public String username() {
     return (String) response.get("nickname");
   }
