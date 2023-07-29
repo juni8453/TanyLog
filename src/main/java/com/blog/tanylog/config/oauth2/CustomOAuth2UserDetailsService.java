@@ -41,7 +41,7 @@ public class CustomOAuth2UserDetailsService implements
     Role role = Role.USER;
 
     // 가입된 유저인지 확인
-    Optional<User> findUser = userRepository.findByEmail(email);
+    Optional<User> findUser = userRepository.findByOauthId(oauthId);
 
     if (findUser.isEmpty()) {
       user = saveUserInfo(oauthId, username, email, profileImage, role);
