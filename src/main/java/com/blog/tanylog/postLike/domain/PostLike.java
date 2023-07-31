@@ -1,6 +1,6 @@
-package com.blog.tanylog.postLike;
+package com.blog.tanylog.postLike.domain;
 
-import com.blog.tanylog.post.Post;
+import com.blog.tanylog.post.domain.Post;
 import com.blog.tanylog.user.domain.User;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;

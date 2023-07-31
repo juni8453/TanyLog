@@ -3,6 +3,7 @@ package com.blog.tanylog.config.oauth2;
 import com.blog.tanylog.config.oauth2.factory.OAuthFactory;
 import com.blog.tanylog.config.oauth2.providerType.CheckOAuthProvider;
 import com.blog.tanylog.config.oauth2.userinfo.OAuthUserInfo;
+import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.user.controller.dto.SessionUser;
 import com.blog.tanylog.user.domain.Role;
 import com.blog.tanylog.user.domain.User;
@@ -34,21 +35,24 @@ public class CustomOAuth2UserDetailsService implements
     CheckOAuthProvider oAuth2Provider = new OAuthFactory().getProvider(providerName);
     OAuthUserInfo userInfo = oAuth2Provider.getUserInfo(oAuth2User);
 
+    String oauthId = userInfo.oauthId();
     String username = userInfo.username();
     String profileImage = userInfo.profileImage();
     String email = userInfo.email();
     Role role = Role.USER;
 
     // 가입된 유저인지 확인
-    Optional<User> findUser = userRepository.findByEmail(email);
+    Optional<User> findUser = userRepository.findByOauthId(oauthId);
 
     if (findUser.isEmpty()) {
-      user = saveUserInfo(username, email, profileImage, role);
+      user = saveUserInfo(oauthId, username, email, profileImage, role);
     }
 
     findUser.ifPresent(value -> user = value);
 
     SessionUser sessionUser = SessionUser.builder()
+        .userId(user.getId())
+        .oauthId(oauthId)
         .username(username)
         .email(email)
         .picture(profileImage)
@@ -58,8 +62,10 @@ public class CustomOAuth2UserDetailsService implements
     return new UserContext(sessionUser, oAuth2User.getAttributes());
   }
 
-  private User saveUserInfo(String username, String email, String profileImage, Role role) {
+  private User saveUserInfo(String oauthId, String username, String email, String profileImage,
+      Role role) {
     User user = User.builder()
+        .oauthId(oauthId)
         .name(username)
         .email(email)
         .picture(profileImage)

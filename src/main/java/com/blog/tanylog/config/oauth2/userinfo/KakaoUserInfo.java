@@ -4,12 +4,19 @@ import java.util.Map;
 
 public class KakaoUserInfo implements OAuthUserInfo {
 
+  private final Map<String, Object> attributes;
   private final Map<String, Object> account;
-  private Map<String, Object> profile;
+  private final Map<String, Object> profile;
 
-  public KakaoUserInfo(Map<String, Object> account) {
-    this.account = account;
+  public KakaoUserInfo(Map<String, Object> attributes) {
+    this.attributes = attributes;
+    this.account = (Map<String, Object>) attributes.get("kakao_account");
     this.profile = (Map<String, Object>) account.get("profile");
+  }
+
+  @Override
+  public String oauthId() {
+    return attributes.get("id").toString();
   }
 
   @Override
