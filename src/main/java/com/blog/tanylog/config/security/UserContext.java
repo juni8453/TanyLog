@@ -1,4 +1,4 @@
-package com.blog.tanylog.config.oauth2;
+package com.blog.tanylog.config.security;
 
 import com.blog.tanylog.user.controller.dto.SessionUser;
 import java.io.Serializable;
