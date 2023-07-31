@@ -15,10 +15,12 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE post SET is_deleted = true WHERE id = ?")
 public class Post extends BaseEntity {
 
   @Id
@@ -47,5 +49,14 @@ public class Post extends BaseEntity {
 
   public void addUser(User user) {
     this.user = user;
+  }
+
+  public boolean checkUser(User loginUser) {
+    return this.user.getOauthId().equals(loginUser.getOauthId());
+  }
+
+  public void updatePost(String updateTitle, String updateContent) {
+    this.title = updateTitle;
+    this.content = updateContent;
   }
 }
