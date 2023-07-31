@@ -52,4 +52,9 @@ public class Post extends BaseEntity {
   public boolean checkUser(User loginUser) {
     return this.user.getOauthId().equals(loginUser.getOauthId());
   }
+
+  public void updatePost(String updateTitle, String updateContent) {
+    this.title = updateTitle;
+    this.content = updateContent;
+  }
 }

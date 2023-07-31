@@ -2,6 +2,7 @@ package com.blog.tanylog.post.controller;
 
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
+import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
 import com.blog.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,5 +29,12 @@ public class PostController {
   @DeleteMapping("/posts/{postId}")
   public void delete(@PathVariable Long postId, @AuthenticationPrincipal UserContext userContext) {
     postService.delete(postId, userContext);
+  }
+
+  @PutMapping("/posts/{postId}")
+  public void update(@PathVariable Long postId, @Valid @RequestBody PostUpdateRequest request,
+      @AuthenticationPrincipal UserContext userContext) {
+
+    postService.update(postId, userContext, request);
   }
 }
