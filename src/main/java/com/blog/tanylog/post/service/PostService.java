@@ -32,4 +32,21 @@ public class PostService {
 
     postRepository.save(post);
   }
+
+  @Transactional
+  public void delete(Long postId, UserContext userContext) {
+    Long userId = userContext.getSessionUser().getUserId();
+    User loginUser = userRepository.findById(userId)
+        .orElseThrow(IllegalArgumentException::new);
+
+    Post findPost = postRepository.findById(postId)
+        .orElseThrow(IllegalArgumentException::new);
+
+    // 다른 유저라면,
+    if (!findPost.checkUser(loginUser)) {
+      throw new IllegalArgumentException("다른 유저의 게시글은 삭제할 수 없습니다.");
+    }
+
+    postRepository.delete(findPost);
+  }
 }

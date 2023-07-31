@@ -48,4 +48,8 @@ public class Post extends BaseEntity {
   public void addUser(User user) {
     this.user = user;
   }
+
+  public boolean checkUser(User loginUser) {
+    return this.user.getOauthId().equals(loginUser.getOauthId());
+  }
 }

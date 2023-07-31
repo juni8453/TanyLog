@@ -23,6 +23,7 @@ public class SecurityConfig {
 
         .authorizeRequests()
         .antMatchers(HttpMethod.POST, "/posts/**").hasAnyRole("ADMIN", "USER")
+        .antMatchers(HttpMethod.DELETE, "/posts/**").hasAnyRole("ADMIN", "USER")
         .anyRequest().permitAll()
 
         .and()
