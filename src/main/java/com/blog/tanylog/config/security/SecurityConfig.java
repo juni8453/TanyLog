@@ -1,9 +1,9 @@
 package com.blog.tanylog.config.security;
 
 import com.blog.tanylog.config.oauth2.CustomOAuth2UserDetailsService;
-import com.blog.tanylog.user.domain.Role;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.web.SecurityFilterChain;
@@ -22,11 +22,8 @@ public class SecurityConfig {
         .and()
 
         .authorizeRequests()
-        .antMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/loginForm")
-        .permitAll()
-        .antMatchers("/api/**").hasRole(Role.ADMIN.name())
-        .antMatchers("/api/**").hasRole(Role.USER.name())
-        .anyRequest().authenticated()
+        .antMatchers(HttpMethod.POST, "/posts/**").hasAnyRole("ADMIN", "USER")
+        .anyRequest().permitAll()
 
         .and()
         .logout()

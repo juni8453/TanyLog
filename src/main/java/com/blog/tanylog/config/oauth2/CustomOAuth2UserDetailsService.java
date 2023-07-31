@@ -3,6 +3,7 @@ package com.blog.tanylog.config.oauth2;
 import com.blog.tanylog.config.oauth2.factory.OAuthFactory;
 import com.blog.tanylog.config.oauth2.providerType.CheckOAuthProvider;
 import com.blog.tanylog.config.oauth2.userinfo.OAuthUserInfo;
+import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.user.controller.dto.SessionUser;
 import com.blog.tanylog.user.domain.Role;
 import com.blog.tanylog.user.domain.User;
@@ -50,6 +51,7 @@ public class CustomOAuth2UserDetailsService implements
     findUser.ifPresent(value -> user = value);
 
     SessionUser sessionUser = SessionUser.builder()
+        .userId(user.getId())
         .oauthId(oauthId)
         .username(username)
         .email(email)
@@ -60,7 +62,8 @@ public class CustomOAuth2UserDetailsService implements
     return new UserContext(sessionUser, oAuth2User.getAttributes());
   }
 
-  private User saveUserInfo(String oauthId, String username, String email, String profileImage, Role role) {
+  private User saveUserInfo(String oauthId, String username, String email, String profileImage,
+      Role role) {
     User user = User.builder()
         .oauthId(oauthId)
         .name(username)
