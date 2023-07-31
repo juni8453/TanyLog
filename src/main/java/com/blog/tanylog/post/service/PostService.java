@@ -23,15 +23,15 @@ public class PostService {
   @Transactional
   public void save(UserContext userContext, PostSaveRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
-    User findUser = userRepository.findById(userId)
-        .orElseThrow(IllegalArgumentException::new);
+    User loginUser = userRepository.findById(userId)
+        .orElseThrow(UserNotFound::new);
 
     String title = request.getTitle();
     String content = request.getContent();
     boolean isDeleted = request.isDeleted();
 
     Post post = request.toEntity(title, content, isDeleted);
-    post.addUser(findUser);
+    post.addUser(loginUser);
 
     postRepository.save(post);
   }
