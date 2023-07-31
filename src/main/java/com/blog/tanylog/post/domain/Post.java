@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -37,4 +38,14 @@ public class Post extends BaseEntity {
   @JoinColumn(name = "user_id")
   private User user;
 
+  @Builder
+  public Post(String title, String content, boolean isDeleted) {
+    this.title = title;
+    this.content = content;
+    this.isDeleted = isDeleted;
+  }
+
+  public void addUser(User user) {
+    this.user = user;
+  }
 }
