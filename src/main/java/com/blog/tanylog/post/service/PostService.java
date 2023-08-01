@@ -2,11 +2,13 @@ package com.blog.tanylog.post.service;
 
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
-  import com.blog.tanylog.global.exception.domain.OtherUserUpdateException;
+import com.blog.tanylog.global.exception.domain.OtherUserUpdateException;
 import com.blog.tanylog.global.exception.domain.PostNotFound;
 import com.blog.tanylog.global.exception.domain.UserNotFound;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
+import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
+import com.blog.tanylog.post.controller.dto.response.WriterResponse;
 import com.blog.tanylog.post.domain.Post;
 import com.blog.tanylog.post.repository.PostRepository;
 import com.blog.tanylog.user.domain.User;
@@ -71,5 +73,29 @@ public class PostService {
     String updateContent = request.getContent();
 
     findPost.updatePost(updateTitle, updateContent);
+  }
+
+  // GET Method 에 Transactional 을 꼭 사용해야할까 ?
+  @Transactional
+  public PostSingleReadResponse read(Long postId) {
+    Post findPost = postRepository.findById(postId)
+        .orElseThrow(PostNotFound::new);
+
+    User user = findPost.getUser();
+
+    WriterResponse writer = WriterResponse.builder()
+        .name(user.getName())
+        .email(user.getEmail())
+        .picture(user.getPicture())
+        .build();
+
+    return PostSingleReadResponse.builder()
+        .id(findPost.getId())
+        .title(findPost.getTitle())
+        .content(findPost.getContent())
+        .createdDate(findPost.getCreateAt())
+        .modifiedDate(findPost.getModifiedAt())
+        .writer(writer)
+        .build();
   }
 }
