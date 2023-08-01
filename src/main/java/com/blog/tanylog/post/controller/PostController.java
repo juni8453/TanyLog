@@ -1,6 +1,7 @@
 package com.blog.tanylog.post.controller;
 
 import com.blog.tanylog.config.security.UserContext;
+import com.blog.tanylog.post.controller.dto.request.PageSearch;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
 import com.blog.tanylog.post.controller.dto.response.PostMultiReadResponse;
@@ -8,11 +9,11 @@ import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
 import com.blog.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -51,8 +52,8 @@ public class PostController {
   }
 
   @GetMapping("/posts")
-  public ResponseEntity<PostMultiReadResponse> readAll(Pageable pageable) {
-    PostMultiReadResponse response = postService.readAll(pageable);
+  public ResponseEntity<PostMultiReadResponse> readAll(@ModelAttribute PageSearch pageSearch) {
+    PostMultiReadResponse response = postService.readAll(pageSearch);
 
     return ResponseEntity.ok(response);
   }
