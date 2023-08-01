@@ -7,6 +7,7 @@ import com.blog.tanylog.global.exception.domain.PostNotFound;
 import com.blog.tanylog.global.exception.domain.UserNotFound;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
+import com.blog.tanylog.post.controller.dto.response.PostMultiReadResponse;
 import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
 import com.blog.tanylog.post.controller.dto.response.WriterResponse;
 import com.blog.tanylog.post.domain.Post;
@@ -14,6 +15,8 @@ import com.blog.tanylog.post.repository.PostRepository;
 import com.blog.tanylog.user.domain.User;
 import com.blog.tanylog.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -96,6 +99,29 @@ public class PostService {
         .createdDate(findPost.getCreateAt())
         .modifiedDate(findPost.getModifiedAt())
         .writer(writer)
+        .build();
+  }
+
+  @Transactional
+  public PostMultiReadResponse readAll(Pageable pageable) {
+    Page<Post> posts = postRepository.findAll(pageable);
+
+    Page<PostSingleReadResponse> pageResponse = posts.map(post ->
+        PostSingleReadResponse.builder()
+            .id(post.getId())
+            .title(post.getTitle())
+            .content(post.getContent())
+            .createdDate(post.getCreateAt())
+            .modifiedDate(post.getModifiedAt())
+            .writer(WriterResponse.builder()
+                .name(post.getUser().getName())
+                .email(post.getUser().getEmail())
+                .picture(post.getUser().getPicture())
+                .build())
+            .build());
+
+    return PostMultiReadResponse.builder()
+        .postsResponse(pageResponse)
         .build();
   }
 }

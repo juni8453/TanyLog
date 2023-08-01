@@ -3,10 +3,12 @@ package com.blog.tanylog.post.controller;
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
+import com.blog.tanylog.post.controller.dto.response.PostMultiReadResponse;
 import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
 import com.blog.tanylog.post.service.PostService;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -44,6 +46,13 @@ public class PostController {
   @GetMapping("/posts/{postId}")
   public ResponseEntity<PostSingleReadResponse> read(@PathVariable Long postId) {
     PostSingleReadResponse response = postService.read(postId);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/posts")
+  public ResponseEntity<PostMultiReadResponse> readAll(Pageable pageable) {
+    PostMultiReadResponse response = postService.readAll(pageable);
 
     return ResponseEntity.ok(response);
   }
