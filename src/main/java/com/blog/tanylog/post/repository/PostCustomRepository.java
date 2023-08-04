@@ -7,4 +7,6 @@ import java.util.List;
 public interface PostCustomRepository {
 
   List<Post> readAll(PageSearch pageSearch);
+
+  List<Post> readNoOffset(PageSearch pageSearch);
 }

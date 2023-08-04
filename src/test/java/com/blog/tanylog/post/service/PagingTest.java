@@ -21,11 +21,28 @@ class PagingTest {
   @DisplayName("게시글 전체 조회 API 페이징 성능을 테스트합니다.")
   void readAll() {
     // given
-    PageSearch pageSearch = new PageSearch(1, 20);
+    PageSearch pageSearch = new PageSearch(1L, 20, 20);
 
     // when
     long startTime = System.currentTimeMillis();
     List<Post> response = postRepository.readAll(pageSearch);
+    long endTime = System.currentTimeMillis();
+    long pagingTime = endTime - startTime;
+    System.out.println("반환 시간: " + pagingTime + "ms");
+
+    // then
+    assertThat(response).isNotNull();
+  }
+
+  @Test
+  @DisplayName("게시글 전체 조회 API 페이징 성능을 테스트합니다.")
+  void readNoOffsetTest() {
+    // given
+    PageSearch pageSearch = new PageSearch(5000L, 1, 20);
+
+    // when
+    long startTime = System.currentTimeMillis();
+    List<Post> response = postRepository.readNoOffset(pageSearch);
     long endTime = System.currentTimeMillis();
     long pagingTime = endTime - startTime;
     System.out.println("반환 시간: " + pagingTime + "ms");

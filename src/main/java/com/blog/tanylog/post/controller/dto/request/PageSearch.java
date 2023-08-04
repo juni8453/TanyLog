@@ -7,10 +7,12 @@ public class PageSearch {
 
   private static final int MAX_SIZE = 2000;
 
+  private final Long lastRecordId;
   private final Integer page;
   private final Integer size;
 
-  public PageSearch(Integer page, Integer size) {
+  public PageSearch(Long lastRecordId, Integer page, Integer size) {
+    this.lastRecordId = (lastRecordId != null) ? lastRecordId : 1L;
     this.page = (page != null) ? page : 1;
     this.size = (size != null) ? size : 20;
   }
