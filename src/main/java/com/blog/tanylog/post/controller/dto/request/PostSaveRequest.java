@@ -3,6 +3,7 @@ package com.blog.tanylog.post.controller.dto.request;
 import com.blog.tanylog.post.domain.Post;
 import javax.validation.constraints.NotBlank;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,13 @@ public class PostSaveRequest {
   private String content;
 
   private boolean isDeleted;
+
+  @Builder
+  public PostSaveRequest(String title, String content, boolean isDeleted) {
+    this.title = title;
+    this.content = content;
+    this.isDeleted = isDeleted;
+  }
 
   public Post toEntity(String title, String content, boolean isDeleted) {
     return Post.builder()
