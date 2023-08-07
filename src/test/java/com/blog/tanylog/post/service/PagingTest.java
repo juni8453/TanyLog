@@ -18,10 +18,10 @@ class PagingTest {
   private PostRepository postRepository;
 
   @Test
-  @DisplayName("게시글 전체 조회 API 페이징 성능을 테스트합니다.")
-  void readAll() {
+  @DisplayName("Offset 방식으로 게시글 전체 조회 API 페이징 성능을 테스트합니다.")
+  void 게시글_전체조회_Offset() {
     // given
-    PageSearch pageSearch = new PageSearch(1L, 20, 20);
+    PageSearch pageSearch = new PageSearch(1L, 4000, 20);
 
     // when
     long startTime = System.currentTimeMillis();
@@ -35,8 +35,8 @@ class PagingTest {
   }
 
   @Test
-  @DisplayName("게시글 전체 조회 API 페이징 성능을 테스트합니다.")
-  void readNoOffsetTest() {
+  @DisplayName("No - Offset 방식으로 게시글 전체 조회 API 페이징 성능을 테스트합니다.")
+  void 게시글_전체조회_No_Offset() {
     // given
     PageSearch pageSearch = new PageSearch(5000L, 1, 20);
 
