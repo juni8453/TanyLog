@@ -106,7 +106,6 @@ public class PostService {
   @Transactional
   public PostMultiReadResponse readAll(PageSearch pageSearch) {
     List<Post> offset = postRepository.readAll(pageSearch);
-//    List<Post> noOffset = postRepository.readNoOffset(pageSearch);
 
     List<PostSingleReadResponse> response = offset.stream()
         .map(post -> PostSingleReadResponse.builder()
