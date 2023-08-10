@@ -2,6 +2,7 @@ package com.blog.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.blog.tanylog.config.DatabaseCleanup;
 import com.blog.tanylog.config.WithMockCustomUser;
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
@@ -33,6 +34,9 @@ class PostServiceTest {
   @Autowired
   private UserRepository userRepository;
 
+  @Autowired
+  private DatabaseCleanup cleanup;
+
   @BeforeEach
   void saveDummyData() {
     User user = User.builder()
@@ -43,6 +47,8 @@ class PostServiceTest {
         .role(Role.USER)
         .build();
 
+    userRepository.save(user);
+
     Post post = Post.builder()
         .title("test_title")
         .content("test_content")
@@ -51,13 +57,12 @@ class PostServiceTest {
 
     post.addUser(user);
 
-    userRepository.save(user);
     postRepository.save(post);
   }
 
   @AfterEach
   void clear() {
-    postRepository.deleteAll();
+    cleanup.execute();
   }
 
   @Test
