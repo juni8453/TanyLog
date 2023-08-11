@@ -16,13 +16,18 @@ import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
+@Table(name = "comments")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLDelete(sql = "UPDATE comments SET is_deleted = true WHERE id = ?")
 public class Comment extends BaseEntity {
 
   @Id
@@ -32,6 +37,8 @@ public class Comment extends BaseEntity {
   @Lob
   @Column(nullable = false)
   private String content;
+
+  private boolean isDeleted;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
@@ -47,4 +54,18 @@ public class Comment extends BaseEntity {
 
   @OneToMany(mappedBy = "parentComment", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Comment> childComments = new ArrayList<>();
+
+  @Builder
+  public Comment(String content, boolean isDeleted) {
+    this.content = content;
+    this.isDeleted = isDeleted;
+  }
+
+  public void addUser(User user) {
+    this.user = user;
+  }
+
+  public void addPost(Post post) {
+    this.post = post;
+  }
 }
