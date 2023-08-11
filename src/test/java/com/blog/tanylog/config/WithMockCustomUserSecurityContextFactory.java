@@ -14,7 +14,7 @@ public class WithMockCustomUserSecurityContextFactory implements
   public SecurityContext createSecurityContext(WithMockCustomUser annotation) {
     SecurityContext context = SecurityContextHolder.createEmptyContext();
     SessionUser sessionUser = SessionUser.builder()
-        .userId(1L)
+        .userId(annotation.userId())
         .oauthId(annotation.oauthId())
         .username(annotation.username())
         .email(annotation.email())
