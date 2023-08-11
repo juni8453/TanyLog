@@ -18,6 +18,7 @@ public class PostRepositoryImpl implements PostCustomRepository {
     return jpaQueryFactory.selectFrom(QPost.post)
         .join(QPost.post.user)
         .fetchJoin()
+        .where(QPost.post.isDeleted.eq(false))
         .limit(pageSearch.getSize())
         .offset(pageSearch.getOffset())
         .orderBy(QPost.post.id.desc())
@@ -39,7 +40,7 @@ public class PostRepositoryImpl implements PostCustomRepository {
         .from(QPost.post)
         .join(QPost.post.user)
         .fetchJoin()
-        .where(dynamicLtId)
+        .where(dynamicLtId.and(QPost.post.isDeleted.eq(false)))
         .orderBy(QPost.post.id.desc())
         .limit(pageSearch.getSize())
         .fetch();
