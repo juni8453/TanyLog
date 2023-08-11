@@ -1,10 +1,13 @@
 package com.blog.tanylog.post.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.blog.tanylog.config.DatabaseCleanup;
 import com.blog.tanylog.config.WithMockCustomUser;
 import com.blog.tanylog.config.security.UserContext;
+import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
+import com.blog.tanylog.global.exception.domain.OtherUserUpdateException;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
 import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
@@ -40,18 +43,18 @@ class PostServiceTest {
   @BeforeEach
   void saveDummyData() {
     User user = User.builder()
-        .oauthId("test_oauthId")
-        .name("test_user")
-        .picture("test_picture")
-        .email("test_email")
+        .oauthId("dummy_oauthId")
+        .name("dummy_user")
+        .picture("dummy_picture")
+        .email("dummy_email")
         .role(Role.USER)
         .build();
 
     userRepository.save(user);
 
     Post post = Post.builder()
-        .title("test_title")
-        .content("test_content")
+        .title("dummy_title")
+        .content("dummy_content")
         .isDeleted(false)
         .build();
 
@@ -141,5 +144,54 @@ class PostServiceTest {
     List<Post> findPosts = postRepository.findAll();
     assertThat(findPosts.get(0).getTitle()).isEqualTo("update title");
     assertThat(findPosts.get(0).getContent()).isEqualTo("update content");
+  }
+
+  @Test
+  @DisplayName("자신이 작성한 게시글이 아니라면 삭제할 수 없습니다.")
+  @WithMockCustomUser(userId = 2)
+  void 타인_게시글_삭제() {
+    // given
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+
+    User loginUser = User.builder()
+        .oauthId(userContext.getSessionUser().getOauthId())
+        .name(userContext.getSessionUser().getUsername())
+        .picture(userContext.getSessionUser().getPicture())
+        .email(userContext.getSessionUser().getEmail())
+        .role(Role.USER)
+        .build();
+
+    userRepository.save(loginUser);
+
+    Long postId = 1L;
+
+    // when, then
+    assertThrows(OtherUserDeleteException.class, () -> postService.delete(postId, userContext));
+  }
+
+  @Test
+  @DisplayName("자신이 작성한 게시글이 아니라면 수정할 수 없습니다.")
+  @WithMockCustomUser(userId = 2)
+  void 타인_게시글_수정() {
+    // given
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+
+    User loginUser = User.builder()
+        .oauthId(userContext.getSessionUser().getOauthId())
+        .name(userContext.getSessionUser().getUsername())
+        .picture(userContext.getSessionUser().getPicture())
+        .email(userContext.getSessionUser().getEmail())
+        .role(Role.USER)
+        .build();
+
+    userRepository.save(loginUser);
+
+    Long postId = 1L;
+
+    // when
+    assertThrows(OtherUserUpdateException.class,
+        () -> postService.update(postId, userContext, PostUpdateRequest.builder().build()));
   }
 }
