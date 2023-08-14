@@ -24,4 +24,12 @@ public class CommentController {
 
     commentService.save(postId, userContext, request);
   }
+
+  @PostMapping("/posts/{postId}/comments/{commentId}/reply")
+  public void saveReply(@PathVariable Long postId, @PathVariable Long commentId,
+      @AuthenticationPrincipal UserContext userContext,
+      @Valid @RequestBody CommentSaveRequest request) {
+
+    commentService.saveReply(postId, commentId, userContext, request);
+  }
 }
