@@ -63,12 +63,12 @@ public class CommentService {
     String content = request.getContent();
     boolean isDeleted = request.isDeleted();
 
-    Comment comment = request.toEntity(content, isDeleted);
-    comment.addDepth();
-    comment.addUser(loginUser);
-    comment.addPost(ownerPost);
-    comment.addParentComment(parentComment);
+    Comment replyComment = request.toEntity(content, isDeleted);
+    replyComment.addDepth();
+    replyComment.addUser(loginUser);
+    replyComment.addPost(ownerPost);
+    replyComment.addRelationByComment(parentComment);
 
-    commentRepository.save(comment);
+    commentRepository.save(replyComment);
   }
 }
