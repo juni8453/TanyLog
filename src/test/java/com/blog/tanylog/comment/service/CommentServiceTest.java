@@ -155,4 +155,74 @@ class CommentServiceTest {
         () -> commentService.saveReply(postId, comments.get(comments.size() - 1).getId(),
             userContext, request));
   }
+
+  @Test
+  @DisplayName("자신이 작성한 댓글을 삭제할 수 있습니다.")
+  @WithMockCustomUser
+  void 댓글_삭제() {
+    // given
+    Long commentId = 1L;
+
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    // when
+    commentService.delete(commentId, userContext);
+
+    // then
+    List<Comment> findComments = commentRepository.findAll();
+    assertThat(findComments.get(0).isDeleted()).isEqualTo(true);
+  }
+
+  @Test
+  @DisplayName("부모 댓글이 삭제되면, 자식 댓글도 함께 삭제됩니다.")
+  @WithMockCustomUser
+  void 댓글_삭제시_대댓글_함께_삭제() {
+    // given
+    Long postId = postRepository.findById(1L).get().getId();
+    Long commentId = 1L;
+
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    commentService.saveReply(postId, commentId, userContext,
+        CommentSaveRequest.builder()
+        .content("reply content")
+        .isDeleted(false)
+        .build());
+
+    // when
+    commentService.delete(commentId, userContext);
+
+    // then
+    List<Comment> findComments = commentRepository.findAll();
+    assertThat(findComments.stream().allMatch(Comment::isDeleted));
+  }
+
+  @Test
+  @DisplayName("자식 댓글만을 삭제할 수 있습니다.")
+  @WithMockCustomUser
+  void 대댓글_삭제() {
+    // given
+    Long postId = postRepository.findById(1L).get().getId();
+    Long commentId = 1L;
+
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    commentService.saveReply(postId, commentId, userContext,
+        CommentSaveRequest.builder()
+            .content("reply content")
+            .isDeleted(false)
+            .build());
+
+    List<Comment> comments = commentRepository.findAll();
+
+    // when
+    commentService.delete(comments.get(comments.size() - 1).getId(), userContext);
+
+    // then
+    List<Comment> beforeDeleteComments = commentRepository.findAll();
+    assertThat(beforeDeleteComments.get(comments.size() - 1).isDeleted()).isEqualTo(true);
+  }
 }
