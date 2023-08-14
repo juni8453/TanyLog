@@ -101,7 +101,7 @@ class PostServiceTest {
 
     // then
     assertThat(response).isNotNull();
-    assertThat(response.getTitle()).isEqualTo("test_title");
+    assertThat(response.getTitle()).isEqualTo("dummy_title");
   }
 
   @Test
