@@ -1,12 +1,14 @@
 package com.blog.tanylog.comment.repository;
 
 import com.blog.tanylog.comment.domain.Comment;
-import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-  @Query("SELECT c FROM Comment c JOIN FETCH c.user JOIN FETCH c.post")
-  List<Comment> findAll();
+  @Modifying(clearAutomatically = true)
+  @Query("UPDATE Comment c SET c.isDeleted = true WHERE c.id = :commentId OR c.parentComment.id = :commentId")
+  void deleteComment(@Param("commentId") Long commentId);
 }

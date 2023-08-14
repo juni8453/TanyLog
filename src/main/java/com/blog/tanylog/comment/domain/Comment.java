@@ -40,6 +40,8 @@ public class Comment extends BaseEntity {
 
   private boolean isDeleted;
 
+  private int replyDepth;
+
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
@@ -61,11 +63,32 @@ public class Comment extends BaseEntity {
     this.isDeleted = isDeleted;
   }
 
+  public boolean checkDepth() {
+    if (this.replyDepth > 0) {
+      return false;
+    }
+
+    return true;
+  }
+
+  public boolean checkUser(User loginUser) {
+    return this.user.getOauthId().equals(loginUser.getOauthId());
+  }
+
+  public void addDepth() {
+    this.replyDepth += 1;
+  }
+
   public void addUser(User user) {
     this.user = user;
   }
 
   public void addPost(Post post) {
     this.post = post;
+  }
+
+  public void addRelationByComment(Comment parentComment) {
+    this.parentComment = parentComment;
+    parentComment.childComments.add(this);
   }
 }

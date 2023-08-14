@@ -50,7 +50,7 @@ public class PostService {
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
-    Post findPost = postRepository.findById(postId)
+    Post findPost = postRepository.findByPostId(postId)
         .orElseThrow(PostNotFound::new);
 
     if (!findPost.checkUser(loginUser)) {
@@ -66,7 +66,7 @@ public class PostService {
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
-    Post findPost = postRepository.findById(postId)
+    Post findPost = postRepository.findByPostId(postId)
         .orElseThrow(PostNotFound::new);
 
     if (!findPost.checkUser(loginUser)) {
@@ -82,7 +82,7 @@ public class PostService {
   // GET Method 에 Transactional 을 꼭 사용해야할까 ?
   @Transactional
   public PostSingleReadResponse read(Long postId) {
-    Post findPost = postRepository.findById(postId)
+    Post findPost = postRepository.findByPostId(postId)
         .orElseThrow(PostNotFound::new);
 
     User user = findPost.getUser();

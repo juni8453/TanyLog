@@ -1,6 +1,7 @@
 package com.blog.tanylog.comment.controller;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -64,5 +65,16 @@ class CommentControllerTest {
             .content(mapper.writeValueAsString(request)))
         .andDo(print())
         .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @DisplayName("비회원 상태로 댓글을 삭제할 수는 없습니다.")
+  void 비회원_댓글_삭제_Redirect() throws Exception {
+    Long commentId = 1L;
+
+    mockMvc.perform(delete("/comments/{commentId}", commentId)
+            .with(csrf()))
+        .andDo(print())
+        .andExpect(status().is3xxRedirection());
   }
 }
