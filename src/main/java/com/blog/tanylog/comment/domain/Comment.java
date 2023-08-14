@@ -71,6 +71,10 @@ public class Comment extends BaseEntity {
     return true;
   }
 
+  public boolean checkUser(User loginUser) {
+    return this.user.getOauthId().equals(loginUser.getOauthId());
+  }
+
   public void addDepth() {
     this.replyDepth += 1;
   }

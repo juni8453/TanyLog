@@ -6,6 +6,7 @@ import com.blog.tanylog.comment.repository.CommentRepository;
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.global.exception.domain.CommentDepthOverException;
 import com.blog.tanylog.global.exception.domain.CommentNotFound;
+import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
 import com.blog.tanylog.global.exception.domain.PostNotFound;
 import com.blog.tanylog.global.exception.domain.UserNotFound;
 import com.blog.tanylog.post.domain.Post;
@@ -70,5 +71,21 @@ public class CommentService {
     replyComment.addRelationByComment(parentComment);
 
     commentRepository.save(replyComment);
+  }
+
+  @Transactional
+  public void delete(Long commentId, UserContext userContext) {
+    Long userId = userContext.getSessionUser().getUserId();
+    User loginUser = userRepository.findById(userId)
+        .orElseThrow(UserNotFound::new);
+
+    Comment findComment = commentRepository.findById(commentId)
+        .orElseThrow(CommentNotFound::new);
+
+    if (!findComment.checkUser(loginUser)) {
+      throw new OtherUserDeleteException();
+    }
+
+    commentRepository.deleteComment(findComment.getId());
   }
 }
