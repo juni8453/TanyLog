@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface CommentRepository extends JpaRepository<Comment, Long> {
+public interface CommentRepository extends JpaRepository<Comment, Long>, CommentCustomRepository {
 
   @Modifying(clearAutomatically = true)
   @Query("UPDATE Comment c SET c.isDeleted = true WHERE c.id = :commentId OR c.parentComment.id = :commentId")
