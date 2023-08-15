@@ -17,13 +17,13 @@ public class CommentRepositoryImpl implements CommentCustomRepository {
 
   @Override
   public List<Comment> readNoOffset(Long postId, CommentPageSearch commentPageSearch) {
-    Long id = commentPageSearch.getLastRecordId();
+    Long lastRecordId = commentPageSearch.getLastRecordId();
 
     BooleanBuilder dynamicLtId = new BooleanBuilder();
 
     // 동적 쿼리 설정
-    if (id != null) {
-      dynamicLtId.and(QComment.comment.id.gt(id));
+    if (lastRecordId != null) {
+      dynamicLtId.and(QComment.comment.id.gt(lastRecordId));
     }
 
     return jpaQueryFactory.select(QComment.comment)
@@ -35,6 +35,30 @@ public class CommentRepositoryImpl implements CommentCustomRepository {
             .and(QComment.comment.replyDepth.eq(0)))
         .orderBy(QComment.comment.id.desc())
         .limit(commentPageSearch.getSize())
+        .fetch();
+  }
+
+  @Override
+  public List<Comment> readReplyNoOffset(Long postId, Long commentId, CommentPageSearch commentPageSearch) {
+    Long lastRecordId = commentPageSearch.getLastRecordId();
+
+    BooleanBuilder dynamicLtId = new BooleanBuilder();
+
+    // 동적 쿼리 설정
+    if (lastRecordId != null) {
+      dynamicLtId.and(QComment.comment.id.gt(lastRecordId));
+    }
+
+    return jpaQueryFactory.select(QComment.comment)
+        .from(QComment.comment)
+        .join(QComment.comment.user).fetchJoin()
+        .join(QComment.comment.post).fetchJoin()
+        .where(dynamicLtId.and(QComment.comment.isDeleted.eq(false))
+            .and(QComment.comment.post.id.eq(postId))
+            .and(QComment.comment.parentComment.id.eq(commentId))
+            .and(QComment.comment.replyDepth.eq(1)))
+        .orderBy(QComment.comment.id.desc())
+        .limit(5)
         .fetch();
   }
 }

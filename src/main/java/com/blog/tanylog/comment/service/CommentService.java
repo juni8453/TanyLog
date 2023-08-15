@@ -118,10 +118,10 @@ public class CommentService {
     findComment.updateComment(updateContent);
   }
 
+  @Transactional
   public CommentMultiReadResponse readAll(Long postId, CommentPageSearch commentPageSearch) {
     // user 필드를 쓰지 않는데 굳이 findByPostId() 대신 findById() 써도 될 듯?
-    Post findPost = postRepository.findByPostId(postId)
-        .orElseThrow(PostNotFound::new);
+    Post findPost = postRepository.findByPostId(postId).orElseThrow(PostNotFound::new);
 
     List<Comment> comments = commentRepository.readNoOffset(findPost.getId(), commentPageSearch);
 
@@ -138,6 +138,34 @@ public class CommentService {
                 .build())
             .build())
         .collect(Collectors.toList());
+
+    return CommentMultiReadResponse
+        .builder()
+        .commentsResponse(response)
+        .build();
+  }
+
+  public CommentMultiReadResponse readReplyAll(Long postId, Long commentId,
+      CommentPageSearch commentPageSearch) {
+    Post findPost = postRepository.findByPostId(postId).orElseThrow(PostNotFound::new);
+
+    Comment findComment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
+
+    List<Comment> comments = commentRepository.readReplyNoOffset(findPost.getId(),
+        findComment.getId(), commentPageSearch);
+
+    List<CommentSingleReadResponse> response = comments.stream()
+        .map(comment -> CommentSingleReadResponse.builder()
+            .id(comment.getId())
+            .content(comment.getContent())
+            .createdDate(comment.getCreateAt())
+            .modifiedDate(comment.getModifiedAt())
+            .writer(CommentWriterResponse.builder()
+                .name(comment.getUser().getName())
+                .email(comment.getUser().getEmail())
+                .picture(comment.getUser().getPicture())
+                .build())
+            .build()).collect(Collectors.toList());
 
     return CommentMultiReadResponse
         .builder()

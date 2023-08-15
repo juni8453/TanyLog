@@ -26,8 +26,7 @@ public class CommentController {
   private final CommentService commentService;
 
   @PostMapping("/posts/{postId}/comments")
-  public void save(@PathVariable Long postId,
-      @AuthenticationPrincipal UserContext userContext,
+  public void save(@PathVariable Long postId, @AuthenticationPrincipal UserContext userContext,
       @Valid @RequestBody CommentSaveRequest request) {
 
     commentService.save(postId, userContext, request);
@@ -61,6 +60,16 @@ public class CommentController {
       @ModelAttribute CommentPageSearch commentPageSearch) {
 
     CommentMultiReadResponse response = commentService.readAll(postId, commentPageSearch);
+
+    return ResponseEntity.ok(response);
+  }
+
+  @GetMapping("/posts/{postId}/comments/{commentId}")
+  public ResponseEntity<CommentMultiReadResponse> readReplyAll(@PathVariable Long postId,
+      @PathVariable Long commentId, @ModelAttribute CommentPageSearch commentPageSearch) {
+
+    CommentMultiReadResponse response = commentService.readReplyAll(postId, commentId,
+        commentPageSearch);
 
     return ResponseEntity.ok(response);
   }

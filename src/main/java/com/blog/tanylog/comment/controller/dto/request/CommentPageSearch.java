@@ -12,6 +12,6 @@ public class CommentPageSearch {
 
   public CommentPageSearch(Long lastRecordId, Integer size) {
     this.lastRecordId = lastRecordId;
-    this.size = (size != null) ? size : 5;
+    this.size = (size != null) ? size : 10;
   }
 }
