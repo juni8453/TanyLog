@@ -10,7 +10,7 @@ import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
 import com.blog.tanylog.post.controller.dto.response.PostMultiReadResponse;
 import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
-import com.blog.tanylog.post.controller.dto.response.WriterResponse;
+import com.blog.tanylog.post.controller.dto.response.PostWriterResponse;
 import com.blog.tanylog.post.domain.Post;
 import com.blog.tanylog.post.repository.PostRepository;
 import com.blog.tanylog.user.domain.User;
@@ -87,7 +87,7 @@ public class PostService {
 
     User user = findPost.getUser();
 
-    WriterResponse writer = WriterResponse.builder()
+    PostWriterResponse writer = PostWriterResponse.builder()
         .name(user.getName())
         .email(user.getEmail())
         .picture(user.getPicture())
@@ -114,7 +114,7 @@ public class PostService {
             .content(post.getContent())
             .createdDate(post.getCreateAt())
             .modifiedDate(post.getModifiedAt())
-            .writer(WriterResponse.builder()
+            .writer(PostWriterResponse.builder()
                 .name(post.getUser().getName())
                 .email(post.getUser().getEmail())
                 .picture(post.getUser().getPicture())

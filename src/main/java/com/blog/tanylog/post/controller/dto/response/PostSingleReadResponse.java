@@ -12,11 +12,11 @@ public class PostSingleReadResponse {
   private final String content;
   private final LocalDateTime createdDate;
   private final LocalDateTime modifiedDate;
-  private final WriterResponse writer;
+  private final PostWriterResponse writer;
 
   @Builder
   public PostSingleReadResponse(Long id, String title, String content,
-      LocalDateTime createdDate, LocalDateTime modifiedDate, WriterResponse writer) {
+      LocalDateTime createdDate, LocalDateTime modifiedDate, PostWriterResponse writer) {
     this.id = id;
     this.title = title;
     this.content = content;

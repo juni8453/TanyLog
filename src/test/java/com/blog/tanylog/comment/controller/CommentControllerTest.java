@@ -3,10 +3,12 @@ package com.blog.tanylog.comment.controller;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.blog.tanylog.comment.controller.dto.request.CommentSaveRequest;
+import com.blog.tanylog.comment.controller.dto.request.CommentUpdateRequest;
 import com.blog.tanylog.comment.service.CommentService;
 import com.blog.tanylog.config.TestSecurityConfig;
 import com.blog.tanylog.config.WithMockCustomUser;
@@ -35,7 +37,7 @@ class CommentControllerTest {
 
   @Test
   @DisplayName("비회원 상태로 댓글을 등록할 수는 없습니다.")
-  void 비회원_게시글_등록_Redirect() throws Exception {
+  void 비회원_댓글_등록_Redirect() throws Exception {
     // given
     Long postId = 1L;
 
@@ -47,9 +49,34 @@ class CommentControllerTest {
   }
 
   @Test
+  @DisplayName("비회원 상태로 댓글을 삭제할 수는 없습니다.")
+  void 비회원_댓글_삭제_Redirect() throws Exception {
+    Long commentId = 1L;
+
+    mockMvc.perform(delete("/comments/{commentId}", commentId)
+            .with(csrf()))
+        .andDo(print())
+        .andExpect(status().is3xxRedirection());
+  }
+
+  @Test
+  @DisplayName("비회원 상태로 댓글을 수정할 수는 없습니다.")
+  void 비회원_댓글_수정_Redirect() throws Exception {
+    // given
+    Long postId = 1L;
+    Long commentId = 1L;
+
+    // when, then
+    mockMvc.perform(put("/posts/{postId}/comments/{commentId}", postId, commentId)
+            .with(csrf()))
+        .andDo(print())
+        .andExpect(status().is3xxRedirection());
+  }
+
+  @Test
   @DisplayName("댓글 등록 시 내용을 비울 수 없습니다.")
   @WithMockCustomUser
-  void 게시글_등록_내용_유효성_검사() throws Exception {
+  void 댓글_등록_내용_유효성_검사() throws Exception {
     // given
     Long postId = 1L;
 
@@ -68,13 +95,23 @@ class CommentControllerTest {
   }
 
   @Test
-  @DisplayName("비회원 상태로 댓글을 삭제할 수는 없습니다.")
-  void 비회원_댓글_삭제_Redirect() throws Exception {
+  @DisplayName("댓글 수정 시 내용을 비울 수 없습니다.")
+  @WithMockCustomUser
+  void 댓글_수정_내용_유효성_검사() throws Exception {
+    // given
+    Long postId = 1L;
     Long commentId = 1L;
 
-    mockMvc.perform(delete("/comments/{commentId}", commentId)
-            .with(csrf()))
+    CommentUpdateRequest request = CommentUpdateRequest.builder()
+        .content("")
+        .build();
+
+    // when, then
+    mockMvc.perform(put("/posts/{postId}/comments/{commentId}", postId, commentId)
+            .with(csrf())
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(mapper.writeValueAsString(request)))
         .andDo(print())
-        .andExpect(status().is3xxRedirection());
+        .andExpect(status().isBadRequest());
   }
 }
