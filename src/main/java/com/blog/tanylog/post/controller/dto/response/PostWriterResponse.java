@@ -4,14 +4,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 @Getter
-public class WriterResponse {
+public class PostWriterResponse {
 
   private final String name;
   private final String email;
   private final String picture;
 
   @Builder
-  public WriterResponse(String name, String email, String picture) {
+  public PostWriterResponse(String name, String email, String picture) {
     this.name = name;
     this.email = email;
     this.picture = picture;
