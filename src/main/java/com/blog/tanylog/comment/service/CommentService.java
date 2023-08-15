@@ -1,6 +1,7 @@
 package com.blog.tanylog.comment.service;
 
 import com.blog.tanylog.comment.controller.dto.request.CommentSaveRequest;
+import com.blog.tanylog.comment.controller.dto.request.CommentUpdateRequest;
 import com.blog.tanylog.comment.domain.Comment;
 import com.blog.tanylog.comment.repository.CommentRepository;
 import com.blog.tanylog.config.security.UserContext;
@@ -31,7 +32,7 @@ public class CommentService {
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
-    Post ownerPost = postRepository.findById(postId)
+    Post findPost = postRepository.findById(postId)
         .orElseThrow(PostNotFound::new);
 
     String content = request.getContent();
@@ -39,7 +40,7 @@ public class CommentService {
 
     Comment comment = request.toEntity(content, isDeleted);
     comment.addUser(loginUser);
-    comment.addPost(ownerPost);
+    comment.addPost(findPost);
 
     commentRepository.save(comment);
   }
@@ -51,7 +52,7 @@ public class CommentService {
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
-    Post ownerPost = postRepository.findById(postId)
+    Post findPost = postRepository.findById(postId)
         .orElseThrow(PostNotFound::new);
 
     Comment parentComment = commentRepository.findById(commentId)
@@ -67,7 +68,7 @@ public class CommentService {
     Comment replyComment = request.toEntity(content, isDeleted);
     replyComment.addDepth();
     replyComment.addUser(loginUser);
-    replyComment.addPost(ownerPost);
+    replyComment.addPost(findPost);
     replyComment.addRelationByComment(parentComment);
 
     commentRepository.save(replyComment);
@@ -87,5 +88,27 @@ public class CommentService {
     }
 
     commentRepository.deleteComment(findComment.getId());
+  }
+
+  @Transactional
+  public void update(Long postId, Long commentId, UserContext userContext,
+      CommentUpdateRequest request) {
+    Long userId = userContext.getSessionUser().getUserId();
+    User loginUser = userRepository.findById(userId)
+        .orElseThrow(UserNotFound::new);
+
+    Post findPost = postRepository.findById(postId)
+        .orElseThrow(PostNotFound::new);
+
+    if (!findPost.checkUser(loginUser)) {
+      throw new OtherUserDeleteException();
+    }
+
+    Comment findComment = commentRepository.findById(commentId)
+        .orElseThrow(CommentNotFound::new);
+
+    String updateContent = request.getContent();
+
+    findComment.updateComment(updateContent);
   }
 }

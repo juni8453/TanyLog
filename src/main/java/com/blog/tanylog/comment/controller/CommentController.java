@@ -1,6 +1,7 @@
 package com.blog.tanylog.comment.controller;
 
 import com.blog.tanylog.comment.controller.dto.request.CommentSaveRequest;
+import com.blog.tanylog.comment.controller.dto.request.CommentUpdateRequest;
 import com.blog.tanylog.comment.service.CommentService;
 import com.blog.tanylog.config.security.UserContext;
 import javax.validation.Valid;
@@ -9,6 +10,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,5 +41,13 @@ public class CommentController {
       @AuthenticationPrincipal UserContext userContext) {
 
     commentService.delete(commentId, userContext);
+  }
+
+  @PutMapping("/posts/{postId}/comments/{commentId}")
+  public void update(@PathVariable Long postId, @PathVariable Long commentId,
+      @AuthenticationPrincipal UserContext userContext,
+      @Valid @RequestBody CommentUpdateRequest request) {
+
+    commentService.update(postId, commentId, userContext, request);
   }
 }
