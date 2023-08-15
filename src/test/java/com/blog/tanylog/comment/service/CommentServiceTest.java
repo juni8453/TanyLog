@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.blog.tanylog.comment.controller.dto.request.CommentSaveRequest;
+import com.blog.tanylog.comment.controller.dto.request.CommentUpdateRequest;
 import com.blog.tanylog.comment.domain.Comment;
 import com.blog.tanylog.comment.repository.CommentRepository;
 import com.blog.tanylog.config.DatabaseCleanup;
@@ -179,7 +180,7 @@ class CommentServiceTest {
   @WithMockCustomUser
   void 댓글_삭제시_대댓글_함께_삭제() {
     // given
-    Long postId = postRepository.findById(1L).get().getId();
+    Long postId = 1L;
     Long commentId = 1L;
 
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
@@ -204,7 +205,7 @@ class CommentServiceTest {
   @WithMockCustomUser
   void 대댓글_삭제() {
     // given
-    Long postId = postRepository.findById(1L).get().getId();
+    Long postId = 1L;
     Long commentId = 1L;
 
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
@@ -224,5 +225,28 @@ class CommentServiceTest {
     // then
     List<Comment> beforeDeleteComments = commentRepository.findAll();
     assertThat(beforeDeleteComments.get(comments.size() - 1).isDeleted()).isEqualTo(true);
+  }
+
+  @Test
+  @DisplayName("자신이 작성한 댓글을 수정할 수 있습니다.")
+  @WithMockCustomUser
+  void 댓글_수정() {
+    // given
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+
+    Long postId = 1L;
+    Long commentId = 1L;
+
+    CommentUpdateRequest request = CommentUpdateRequest.builder()
+        .content("update content")
+        .build();
+
+    // when
+    commentService.update(postId, commentId, userContext, request);
+
+    // then
+    Comment findComment = commentRepository.findById(1L).get();
+    assertThat(findComment.getContent()).isEqualTo("update content");
   }
 }
