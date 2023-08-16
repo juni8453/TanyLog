@@ -33,7 +33,7 @@ public class CommentService {
   private final PostRepository postRepository;
 
   @Transactional
-  public void save(Long postId, UserContext userContext, CommentSaveRequest request) {
+  public Long save(Long postId, UserContext userContext, CommentSaveRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
@@ -48,7 +48,9 @@ public class CommentService {
     comment.addUser(loginUser);
     comment.addPost(findPost);
 
-    commentRepository.save(comment);
+    Comment savedComment = commentRepository.save(comment);
+
+    return savedComment.getId();
   }
 
   @Transactional

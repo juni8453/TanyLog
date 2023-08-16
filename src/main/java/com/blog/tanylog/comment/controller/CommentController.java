@@ -6,6 +6,7 @@ import com.blog.tanylog.comment.controller.dto.request.CommentUpdateRequest;
 import com.blog.tanylog.comment.controller.dto.response.CommentMultiReadResponse;
 import com.blog.tanylog.comment.service.CommentService;
 import com.blog.tanylog.config.security.UserContext;
+import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -26,10 +27,14 @@ public class CommentController {
   private final CommentService commentService;
 
   @PostMapping("/posts/{postId}/comments")
-  public void save(@PathVariable Long postId, @AuthenticationPrincipal UserContext userContext,
+  public ResponseEntity<Void> save(@PathVariable Long postId, @AuthenticationPrincipal UserContext userContext,
       @Valid @RequestBody CommentSaveRequest request) {
 
-    commentService.save(postId, userContext, request);
+    Long savedCommentId = commentService.save(postId, userContext, request);
+
+    URI location = URI.create("/posts/" + postId + "/comments/" + savedCommentId);
+
+    return ResponseEntity.created(location).build();
   }
 
   @PostMapping("/posts/{postId}/comments/{commentId}/reply")
