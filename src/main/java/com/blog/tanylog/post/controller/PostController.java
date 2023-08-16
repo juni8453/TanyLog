@@ -7,6 +7,7 @@ import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
 import com.blog.tanylog.post.controller.dto.response.PostMultiReadResponse;
 import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
 import com.blog.tanylog.post.service.PostService;
+import java.net.URI;
 import javax.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -27,9 +28,13 @@ public class PostController {
   private final PostService postService;
 
   @PostMapping("/posts")
-  public void save(@Valid @RequestBody PostSaveRequest request,
+  public ResponseEntity<Void> save(@Valid @RequestBody PostSaveRequest request,
       @AuthenticationPrincipal UserContext userContext) {
-    postService.save(userContext, request);
+    Long savedPostId = postService.save(userContext, request);
+
+    URI location = URI.create("/posts/" + savedPostId);
+
+    return ResponseEntity.created(location).build();
   }
 
   @DeleteMapping("/posts/{postId}")

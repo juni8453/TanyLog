@@ -29,7 +29,7 @@ public class PostService {
   private final UserRepository userRepository;
 
   @Transactional
-  public void save(UserContext userContext, PostSaveRequest request) {
+  public Long save(UserContext userContext, PostSaveRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
@@ -41,7 +41,9 @@ public class PostService {
     Post post = request.toEntity(title, content, isDeleted);
     post.addUser(loginUser);
 
-    postRepository.save(post);
+    Post savedPost = postRepository.save(post);
+
+    return savedPost.getId();
   }
 
   @Transactional
