@@ -3,8 +3,10 @@ package com.blog.tanylog.comment.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import com.blog.tanylog.comment.controller.dto.request.CommentPageSearch;
 import com.blog.tanylog.comment.controller.dto.request.CommentSaveRequest;
 import com.blog.tanylog.comment.controller.dto.request.CommentUpdateRequest;
+import com.blog.tanylog.comment.controller.dto.response.CommentMultiReadResponse;
 import com.blog.tanylog.comment.domain.Comment;
 import com.blog.tanylog.comment.repository.CommentRepository;
 import com.blog.tanylog.config.DatabaseCleanup;
@@ -17,6 +19,8 @@ import com.blog.tanylog.user.domain.Role;
 import com.blog.tanylog.user.domain.User;
 import com.blog.tanylog.user.repository.UserRepository;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -64,16 +68,6 @@ class CommentServiceTest {
     post.addUser(user);
 
     postRepository.save(post);
-
-    Comment comment = commentRepository.save(Comment.builder()
-        .content("test content")
-        .isDeleted(false)
-        .build());
-
-    comment.addUser(user);
-    comment.addPost(post);
-
-    commentRepository.save(comment);
   }
 
   @AfterEach
@@ -101,7 +95,7 @@ class CommentServiceTest {
 
     // then
     List<Comment> findComments = commentRepository.findAll();
-    assertThat(findComments.size()).isEqualTo(2);
+    assertThat(findComments.size()).isEqualTo(1);
     assertThat(findComments.stream().allMatch(comment -> comment.getReplyDepth() == 0)).isTrue();
   }
 
@@ -112,6 +106,16 @@ class CommentServiceTest {
     // given
     Long postId = 1L;
     Long commentId = 1L;
+
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
 
     UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
         .getPrincipal();
@@ -139,6 +143,16 @@ class CommentServiceTest {
     Long postId = 1L;
     Long commentId = 1L;
 
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
+
     UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
         .getPrincipal();
 
@@ -164,6 +178,16 @@ class CommentServiceTest {
     // given
     Long commentId = 1L;
 
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
+
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
 
@@ -183,14 +207,24 @@ class CommentServiceTest {
     Long postId = 1L;
     Long commentId = 1L;
 
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
+
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
 
     commentService.saveReply(postId, commentId, userContext,
         CommentSaveRequest.builder()
-        .content("reply content")
-        .isDeleted(false)
-        .build());
+            .content("reply content")
+            .isDeleted(false)
+            .build());
 
     // when
     commentService.delete(commentId, userContext);
@@ -207,6 +241,16 @@ class CommentServiceTest {
     // given
     Long postId = 1L;
     Long commentId = 1L;
+
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
 
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
         .getAuthentication().getPrincipal();
@@ -232,11 +276,21 @@ class CommentServiceTest {
   @WithMockCustomUser
   void 댓글_수정() {
     // given
+    Long postId = 1L;
+    Long commentId = 1L;
+
     UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
         .getPrincipal();
 
-    Long postId = 1L;
-    Long commentId = 1L;
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
 
     CommentUpdateRequest request = CommentUpdateRequest.builder()
         .content("update content")
@@ -248,5 +302,82 @@ class CommentServiceTest {
     // then
     Comment findComment = commentRepository.findById(1L).get();
     assertThat(findComment.getContent()).isEqualTo("update content");
+  }
+
+  @Test
+  @DisplayName("상위 댓글 목록을 설정한 개수만큼 내림차순으로 조회합니다.")
+  void 댓글_전체_조회() {
+    // given
+    CommentPageSearch commentPageSearch = new CommentPageSearch(0L, 5);
+
+    User user = userRepository.findById(1L).get();
+    Post post = postRepository.findById(1L).get();
+
+    List<Comment> comments = IntStream.range(0, 10)
+        .mapToObj(i -> Comment.builder()
+            .content("content - " + i)
+            .isDeleted(false)
+            .build())
+        .collect(Collectors.toList()).stream().peek(comment -> {
+          comment.addUser(user);
+          comment.addPost(post);
+
+        }).collect(Collectors.toList());
+
+    commentRepository.saveAll(comments);
+
+    // when
+    CommentMultiReadResponse commentMultiReadResponse = commentService.readAll(post.getId(),
+        commentPageSearch);
+
+    // then
+    assertThat(commentMultiReadResponse.getCommentsResponse().get(0).getId()).isEqualTo(10L);
+  }
+
+  @Test
+  @DisplayName("상위 댓글의 자식 댓글 목록을 설정한 개수만큼 내림차순으로 조회합니다.")
+  void 자식_댓글_전체_조회() {
+    // given
+    CommentPageSearch commentPageSearch = new CommentPageSearch(0L, 5);
+
+    User user = userRepository.findById(1L).get();
+    Post post = postRepository.findById(1L).get();
+
+    Comment parentComment = commentRepository.save(Comment.builder()
+        .content("parent comment")
+        .isDeleted(false)
+        .build());
+
+    parentComment.addUser(user);
+    parentComment.addPost(post);
+
+    commentRepository.save(parentComment);
+
+    List<Comment> childComments = IntStream.range(0, 10)
+        .mapToObj(i -> Comment.builder()
+            .content("reply comment - " + i)
+            .replyDepth(1)
+            .isDeleted(false)
+            .build())
+        .collect(Collectors.toList()).stream().peek(comment -> {
+          comment.addUser(user);
+          comment.addPost(post);
+          comment.addRelationByComment(parentComment);
+
+        }).collect(Collectors.toList());
+
+    commentRepository.saveAll(childComments);
+
+    // when
+    CommentMultiReadResponse commentMultiReadResponse = commentService.readReplyAll(post.getId(),
+        parentComment.getId(), commentPageSearch);
+
+    // then
+    assertThat(commentMultiReadResponse.getCommentsResponse().size()).isEqualTo(
+        commentPageSearch.getSize());
+
+    assertThat(commentMultiReadResponse.getCommentsResponse().stream()
+        .allMatch(commentSingleReadResponse -> commentSingleReadResponse.getContent()
+            .contains("reply comment"))).isEqualTo(true);
   }
 }
