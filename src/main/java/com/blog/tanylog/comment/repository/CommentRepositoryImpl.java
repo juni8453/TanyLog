@@ -58,7 +58,7 @@ public class CommentRepositoryImpl implements CommentCustomRepository {
             .and(QComment.comment.parentComment.id.eq(commentId))
             .and(QComment.comment.replyDepth.eq(1)))
         .orderBy(QComment.comment.id.desc())
-        .limit(5)
+        .limit(commentPageSearch.getSize())
         .fetch();
   }
 }
