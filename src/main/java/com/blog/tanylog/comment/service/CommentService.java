@@ -56,7 +56,7 @@ public class CommentService {
   }
 
   @Transactional
-  public void saveReply(Long postId, Long commentId, UserContext userContext,
+  public Long saveReply(Long postId, Long commentId, UserContext userContext,
       CommentSaveRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
@@ -81,7 +81,9 @@ public class CommentService {
     replyComment.addPost(findPost);
     replyComment.addRelationByComment(parentComment);
 
-    commentRepository.save(replyComment);
+    Comment savedReplyComment = commentRepository.save(replyComment);
+
+    return savedReplyComment.getId();
   }
 
   @Transactional

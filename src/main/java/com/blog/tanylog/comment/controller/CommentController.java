@@ -39,11 +39,16 @@ public class CommentController {
   }
 
   @PostMapping("/posts/{postId}/comments/{commentId}/reply")
-  public void saveReply(@PathVariable Long postId, @PathVariable Long commentId,
+  public ResponseEntity<Void> saveReply(@PathVariable Long postId, @PathVariable Long commentId,
       @AuthenticationPrincipal UserContext userContext,
       @Valid @RequestBody CommentSaveRequest request) {
 
-    commentService.saveReply(postId, commentId, userContext, request);
+    Long savedReplyCommentId = commentService.saveReply(postId, commentId, userContext, request);
+
+    URI location = URI.create(
+        "/posts/" + postId + "/comments/" + commentId + "/reply/" + savedReplyCommentId);
+
+    return ResponseEntity.created(location).build();
   }
 
   @DeleteMapping("/comments/{commentId}")
