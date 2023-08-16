@@ -20,6 +20,7 @@ import com.blog.tanylog.post.repository.PostRepository;
 import com.blog.tanylog.user.domain.User;
 import com.blog.tanylog.user.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -120,23 +121,8 @@ public class CommentService {
 
   @Transactional
   public CommentMultiReadResponse readAll(Long postId, CommentPageSearch commentPageSearch) {
-    Post findPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
-
-    List<Comment> comments = commentRepository.readNoOffset(findPost.getId(), commentPageSearch);
-
-    List<CommentSingleReadResponse> response = comments.stream()
-        .map(comment -> CommentSingleReadResponse.builder()
-            .id(comment.getId())
-            .content(comment.getContent())
-            .createdDate(comment.getCreateAt())
-            .modifiedDate(comment.getModifiedAt())
-            .writer(CommentWriterResponse.builder()
-                .name(comment.getUser().getName())
-                .email(comment.getUser().getEmail())
-                .picture(comment.getUser().getPicture())
-                .build())
-            .build())
-        .collect(Collectors.toList());
+    List<Comment> comments = getComments(postId, Optional.empty(), commentPageSearch);
+    List<CommentSingleReadResponse> response = commentToSingleReadResponse(comments);
 
     return CommentMultiReadResponse
         .builder()
@@ -144,16 +130,35 @@ public class CommentService {
         .build();
   }
 
-  public CommentMultiReadResponse readReplyAll(Long postId, Long commentId,
-      CommentPageSearch commentPageSearch) {
+  @Transactional
+  public CommentMultiReadResponse readReplyAll(Long postId, Long commentId, CommentPageSearch commentPageSearch) {
+    List<Comment> childComments = getComments(postId, Optional.of(commentId), commentPageSearch);
+    List<CommentSingleReadResponse> response = commentToSingleReadResponse(childComments);
+
+    return CommentMultiReadResponse
+        .builder()
+        .commentsResponse(response)
+        .build();
+  }
+
+  /**
+   * @param commentId
+   *  comment ID 값이 존재하지 않다면 상위 댓글을 조회합니다.
+   *  comment ID 값이 존재한다면 comment ID 의 자식 댓글을 조회합니다.
+   */
+  private List<Comment> getComments(Long postId, Optional<Long> commentId, CommentPageSearch commentPageSearch) {
     Post findPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
 
-    Comment parentComment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
+    if (commentId.isPresent()) {
+      return commentRepository.readReplyNoOffset(findPost.getId(), commentId.get(), commentPageSearch);
 
-    List<Comment> comments = commentRepository.readReplyNoOffset(findPost.getId(),
-        parentComment.getId(), commentPageSearch);
+    } else {
+      return commentRepository.readNoOffset(findPost.getId(), commentPageSearch);
+    }
+  }
 
-    List<CommentSingleReadResponse> response = comments.stream()
+  private List<CommentSingleReadResponse> commentToSingleReadResponse(List<Comment> comments) {
+    return comments.stream()
         .map(comment -> CommentSingleReadResponse.builder()
             .id(comment.getId())
             .content(comment.getContent())
@@ -165,10 +170,5 @@ public class CommentService {
                 .picture(comment.getUser().getPicture())
                 .build())
             .build()).collect(Collectors.toList());
-
-    return CommentMultiReadResponse
-        .builder()
-        .commentsResponse(response)
-        .build();
   }
 }
