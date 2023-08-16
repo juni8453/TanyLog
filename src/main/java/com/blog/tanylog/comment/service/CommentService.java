@@ -12,6 +12,7 @@ import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.global.exception.domain.CommentDepthOverException;
 import com.blog.tanylog.global.exception.domain.CommentNotFound;
 import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
+import com.blog.tanylog.global.exception.domain.OtherUserUpdateException;
 import com.blog.tanylog.global.exception.domain.PostNotFound;
 import com.blog.tanylog.global.exception.domain.UserNotFound;
 import com.blog.tanylog.post.domain.Post;
@@ -99,21 +100,18 @@ public class CommentService {
   }
 
   @Transactional
-  public void update(Long postId, Long commentId, UserContext userContext,
+  public void update(Long commentId, UserContext userContext,
       CommentUpdateRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
-    Post findPost = postRepository.findById(postId)
-        .orElseThrow(PostNotFound::new);
-
-    if (!findPost.checkUser(loginUser)) {
-      throw new OtherUserDeleteException();
-    }
-
     Comment findComment = commentRepository.findById(commentId)
         .orElseThrow(CommentNotFound::new);
+
+    if (!findComment.checkUser(loginUser)) {
+      throw new OtherUserUpdateException();
+    }
 
     String updateContent = request.getContent();
 

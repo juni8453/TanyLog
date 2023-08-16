@@ -27,7 +27,8 @@ public class CommentController {
   private final CommentService commentService;
 
   @PostMapping("/posts/{postId}/comments")
-  public ResponseEntity<Void> save(@PathVariable Long postId, @AuthenticationPrincipal UserContext userContext,
+  public ResponseEntity<Void> save(@PathVariable Long postId,
+      @AuthenticationPrincipal UserContext userContext,
       @Valid @RequestBody CommentSaveRequest request) {
 
     Long savedCommentId = commentService.save(postId, userContext, request);
@@ -52,12 +53,12 @@ public class CommentController {
     commentService.delete(commentId, userContext);
   }
 
-  @PutMapping("/posts/{postId}/comments/{commentId}")
-  public void update(@PathVariable Long postId, @PathVariable Long commentId,
+  @PutMapping("/comments/{commentId}")
+  public void update(@PathVariable Long commentId,
       @AuthenticationPrincipal UserContext userContext,
       @Valid @RequestBody CommentUpdateRequest request) {
 
-    commentService.update(postId, commentId, userContext, request);
+    commentService.update(commentId, userContext, request);
   }
 
   @GetMapping("/posts/{postId}/comments")
