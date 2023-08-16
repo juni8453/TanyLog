@@ -8,5 +8,5 @@ public interface CommentCustomRepository {
 
   List<Comment> readNoOffset(Long postId, CommentPageSearch commentPageSearch);
 
-  List<Comment> readReplyNoOffset(Long postId, Long commentId, CommentPageSearch commentPageSearch);
+  List<Comment> readReplyNoOffset(Long postId, Long parentCommentId, CommentPageSearch commentPageSearch);
 }

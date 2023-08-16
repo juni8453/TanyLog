@@ -120,8 +120,7 @@ public class CommentService {
 
   @Transactional
   public CommentMultiReadResponse readAll(Long postId, CommentPageSearch commentPageSearch) {
-    // user 필드를 쓰지 않는데 굳이 findByPostId() 대신 findById() 써도 될 듯?
-    Post findPost = postRepository.findByPostId(postId).orElseThrow(PostNotFound::new);
+    Post findPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
 
     List<Comment> comments = commentRepository.readNoOffset(findPost.getId(), commentPageSearch);
 
@@ -147,12 +146,12 @@ public class CommentService {
 
   public CommentMultiReadResponse readReplyAll(Long postId, Long commentId,
       CommentPageSearch commentPageSearch) {
-    Post findPost = postRepository.findByPostId(postId).orElseThrow(PostNotFound::new);
+    Post findPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
 
-    Comment findComment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
+    Comment parentComment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
 
     List<Comment> comments = commentRepository.readReplyNoOffset(findPost.getId(),
-        findComment.getId(), commentPageSearch);
+        parentComment.getId(), commentPageSearch);
 
     List<CommentSingleReadResponse> response = comments.stream()
         .map(comment -> CommentSingleReadResponse.builder()
