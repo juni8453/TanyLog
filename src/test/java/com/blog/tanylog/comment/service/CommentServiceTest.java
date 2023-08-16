@@ -13,6 +13,7 @@ import com.blog.tanylog.config.DatabaseCleanup;
 import com.blog.tanylog.config.WithMockCustomUser;
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.global.exception.domain.CommentDepthOverException;
+import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
 import com.blog.tanylog.post.domain.Post;
 import com.blog.tanylog.post.repository.PostRepository;
 import com.blog.tanylog.user.domain.Role;
@@ -200,6 +201,40 @@ class CommentServiceTest {
   }
 
   @Test
+  @DisplayName("자신이 작성한 댓글이 아니라면 삭제할 수 없습니다.")
+  @WithMockCustomUser(userId = 2)
+  void 타인_댓글_삭제() {
+    // given
+    Long commentId = 1L;
+
+    Comment comment = commentRepository.save(Comment.builder()
+        .content("test content")
+        .isDeleted(false)
+        .build());
+
+    comment.addUser(userRepository.findById(1L).get());
+    comment.addPost(postRepository.findById(1L).get());
+
+    commentRepository.save(comment);
+
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext()
+        .getAuthentication().getPrincipal();
+
+    User loginUser = User.builder()
+        .oauthId(userContext.getSessionUser().getOauthId())
+        .name(userContext.getSessionUser().getUsername())
+        .picture(userContext.getSessionUser().getPicture())
+        .email(userContext.getSessionUser().getEmail())
+        .role(Role.USER)
+        .build();
+
+    userRepository.save(loginUser);
+
+    // when, then
+    assertThrows(OtherUserDeleteException.class, () -> commentService.delete(commentId, userContext));
+  }
+
+  @Test
   @DisplayName("부모 댓글이 삭제되면, 자식 댓글도 함께 삭제됩니다.")
   @WithMockCustomUser
   void 댓글_삭제시_대댓글_함께_삭제() {
@@ -297,7 +332,7 @@ class CommentServiceTest {
         .build();
 
     // when
-    commentService.update(postId, commentId, userContext, request);
+    commentService.update(commentId, userContext, request);
 
     // then
     Comment findComment = commentRepository.findById(1L).get();
