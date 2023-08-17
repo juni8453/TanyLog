@@ -50,8 +50,9 @@ public class PostController {
   }
 
   @GetMapping("/posts/{postId}")
-  public ResponseEntity<PostSingleReadResponse> read(@PathVariable Long postId) {
-    PostSingleReadResponse response = postService.read(postId);
+  public ResponseEntity<PostSingleReadResponse> read(@PathVariable Long postId,
+      @AuthenticationPrincipal UserContext userContext) {
+    PostSingleReadResponse response = postService.read(postId, userContext);
 
     return ResponseEntity.ok(response);
   }

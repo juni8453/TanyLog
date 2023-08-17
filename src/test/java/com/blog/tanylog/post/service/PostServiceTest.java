@@ -97,7 +97,7 @@ class PostServiceTest {
     Long postId = 1L;
 
     // when
-    PostSingleReadResponse response = postService.read(postId);
+    PostSingleReadResponse response = postService.read(postId, null);
 
     // then
     assertThat(response).isNotNull();
