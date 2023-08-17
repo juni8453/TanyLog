@@ -81,7 +81,11 @@ public class PostService {
     findPost.updatePost(updateTitle, updateContent);
   }
 
-  // GET Method 에 Transactional 을 꼭 사용해야할까 ?
+  /**
+   * GET Method 에 Transactional 을 꼭 사용해야할까 ?
+   *  선언적 트랜잭션이 없더라도 단순 조회는 가능하나, 영속성 컨텍스트가 생성되지 않아 관리를 받지 못하기 때문에 Lazy Loading 관련 예외가 발생할 수 있다.
+   *  물론 findPostId() 는 FETCH JOIN 을 사용하고 있기 때문에 한번에 User 데이터까지 조회하기 때문에 Lazy Loading 예외는 발생하지 않는다.
+   */
   @Transactional
   public PostSingleReadResponse read(Long postId) {
     Post findPost = postRepository.findByPostId(postId)
