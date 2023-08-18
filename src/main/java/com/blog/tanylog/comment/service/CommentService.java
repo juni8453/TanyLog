@@ -12,6 +12,7 @@ import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.global.exception.domain.CommentDepthOverException;
 import com.blog.tanylog.global.exception.domain.CommentNotFound;
 import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
+import com.blog.tanylog.global.exception.domain.OtherUserUpdateException;
 import com.blog.tanylog.global.exception.domain.PostNotFound;
 import com.blog.tanylog.global.exception.domain.UserNotFound;
 import com.blog.tanylog.post.domain.Post;
@@ -19,6 +20,7 @@ import com.blog.tanylog.post.repository.PostRepository;
 import com.blog.tanylog.user.domain.User;
 import com.blog.tanylog.user.repository.UserRepository;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -33,7 +35,7 @@ public class CommentService {
   private final PostRepository postRepository;
 
   @Transactional
-  public void save(Long postId, UserContext userContext, CommentSaveRequest request) {
+  public Long save(Long postId, UserContext userContext, CommentSaveRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
@@ -48,11 +50,13 @@ public class CommentService {
     comment.addUser(loginUser);
     comment.addPost(findPost);
 
-    commentRepository.save(comment);
+    Comment savedComment = commentRepository.save(comment);
+
+    return savedComment.getId();
   }
 
   @Transactional
-  public void saveReply(Long postId, Long commentId, UserContext userContext,
+  public Long saveReply(Long postId, Long commentId, UserContext userContext,
       CommentSaveRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
@@ -77,7 +81,9 @@ public class CommentService {
     replyComment.addPost(findPost);
     replyComment.addRelationByComment(parentComment);
 
-    commentRepository.save(replyComment);
+    Comment savedReplyComment = commentRepository.save(replyComment);
+
+    return savedReplyComment.getId();
   }
 
   @Transactional
@@ -97,21 +103,18 @@ public class CommentService {
   }
 
   @Transactional
-  public void update(Long postId, Long commentId, UserContext userContext,
+  public void update(Long commentId, UserContext userContext,
       CommentUpdateRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
-    Post findPost = postRepository.findById(postId)
-        .orElseThrow(PostNotFound::new);
-
-    if (!findPost.checkUser(loginUser)) {
-      throw new OtherUserDeleteException();
-    }
-
     Comment findComment = commentRepository.findById(commentId)
         .orElseThrow(CommentNotFound::new);
+
+    if (!findComment.checkUser(loginUser)) {
+      throw new OtherUserUpdateException();
+    }
 
     String updateContent = request.getContent();
 
@@ -120,24 +123,8 @@ public class CommentService {
 
   @Transactional
   public CommentMultiReadResponse readAll(Long postId, CommentPageSearch commentPageSearch) {
-    // user 필드를 쓰지 않는데 굳이 findByPostId() 대신 findById() 써도 될 듯?
-    Post findPost = postRepository.findByPostId(postId).orElseThrow(PostNotFound::new);
-
-    List<Comment> comments = commentRepository.readNoOffset(findPost.getId(), commentPageSearch);
-
-    List<CommentSingleReadResponse> response = comments.stream()
-        .map(comment -> CommentSingleReadResponse.builder()
-            .id(comment.getId())
-            .content(comment.getContent())
-            .createdDate(comment.getCreateAt())
-            .modifiedDate(comment.getModifiedAt())
-            .writer(CommentWriterResponse.builder()
-                .name(comment.getUser().getName())
-                .email(comment.getUser().getEmail())
-                .picture(comment.getUser().getPicture())
-                .build())
-            .build())
-        .collect(Collectors.toList());
+    List<Comment> comments = getComments(postId, Optional.empty(), commentPageSearch);
+    List<CommentSingleReadResponse> response = commentToSingleReadResponse(comments);
 
     return CommentMultiReadResponse
         .builder()
@@ -145,16 +132,35 @@ public class CommentService {
         .build();
   }
 
-  public CommentMultiReadResponse readReplyAll(Long postId, Long commentId,
-      CommentPageSearch commentPageSearch) {
-    Post findPost = postRepository.findByPostId(postId).orElseThrow(PostNotFound::new);
+  @Transactional
+  public CommentMultiReadResponse readReplyAll(Long postId, Long commentId, CommentPageSearch commentPageSearch) {
+    List<Comment> childComments = getComments(postId, Optional.of(commentId), commentPageSearch);
+    List<CommentSingleReadResponse> response = commentToSingleReadResponse(childComments);
 
-    Comment findComment = commentRepository.findById(commentId).orElseThrow(CommentNotFound::new);
+    return CommentMultiReadResponse
+        .builder()
+        .commentsResponse(response)
+        .build();
+  }
 
-    List<Comment> comments = commentRepository.readReplyNoOffset(findPost.getId(),
-        findComment.getId(), commentPageSearch);
+  /**
+   * @param commentId
+   *  comment ID 값이 존재하지 않다면 상위 댓글을 조회합니다.
+   *  comment ID 값이 존재한다면 comment ID 의 자식 댓글을 조회합니다.
+   */
+  private List<Comment> getComments(Long postId, Optional<Long> commentId, CommentPageSearch commentPageSearch) {
+    Post findPost = postRepository.findById(postId).orElseThrow(PostNotFound::new);
 
-    List<CommentSingleReadResponse> response = comments.stream()
+    if (commentId.isPresent()) {
+      return commentRepository.readReplyNoOffset(findPost.getId(), commentId.get(), commentPageSearch);
+
+    } else {
+      return commentRepository.readNoOffset(findPost.getId(), commentPageSearch);
+    }
+  }
+
+  private List<CommentSingleReadResponse> commentToSingleReadResponse(List<Comment> comments) {
+    return comments.stream()
         .map(comment -> CommentSingleReadResponse.builder()
             .id(comment.getId())
             .content(comment.getContent())
@@ -166,10 +172,5 @@ public class CommentService {
                 .picture(comment.getUser().getPicture())
                 .build())
             .build()).collect(Collectors.toList());
-
-    return CommentMultiReadResponse
-        .builder()
-        .commentsResponse(response)
-        .build();
   }
 }

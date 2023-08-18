@@ -51,16 +51,6 @@ class PostServiceTest {
         .build();
 
     userRepository.save(user);
-
-    Post post = Post.builder()
-        .title("dummy_title")
-        .content("dummy_content")
-        .isDeleted(false)
-        .build();
-
-    post.addUser(user);
-
-    postRepository.save(post);
   }
 
   @AfterEach
@@ -87,21 +77,31 @@ class PostServiceTest {
 
     // then
     List<Post> findPosts = postRepository.findAll();
-    assertThat(findPosts.size()).isEqualTo(2);
+    assertThat(findPosts.size()).isEqualTo(1);
   }
 
   @Test
   @DisplayName("권한에 상관없이 게시글을 조회할 수 있습니다.")
   void 게시글_단일_조회() {
     // given
+    User user = userRepository.findById(1L).get();
+    Post post = Post.builder()
+        .title("test title")
+        .content("test content")
+        .isDeleted(false)
+        .build();
+
+    post.addUser(user);
+    postRepository.save(post);
+
     Long postId = 1L;
 
     // when
-    PostSingleReadResponse response = postService.read(postId);
+    PostSingleReadResponse response = postService.read(postId, null);
 
     // then
     assertThat(response).isNotNull();
-    assertThat(response.getTitle()).isEqualTo("dummy_title");
+    assertThat(response.getTitle()).isEqualTo("test title");
   }
 
   @Test
@@ -109,6 +109,16 @@ class PostServiceTest {
   @WithMockCustomUser
   void 게시글_삭제() {
     // given
+    User user = userRepository.findById(1L).get();
+    Post post = Post.builder()
+        .title("test title")
+        .content("test content")
+        .isDeleted(false)
+        .build();
+
+    post.addUser(user);
+    postRepository.save(post);
+
     Long postId = 1L;
 
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
@@ -127,6 +137,16 @@ class PostServiceTest {
   @WithMockCustomUser
   void 게시글_수정() {
     // given
+    User user = userRepository.findById(1L).get();
+    Post post = Post.builder()
+        .title("test title")
+        .content("test content")
+        .isDeleted(false)
+        .build();
+
+    post.addUser(user);
+    postRepository.save(post);
+
     Long postId = 1L;
 
     UserContext userContext = (UserContext) SecurityContextHolder.getContext()
@@ -151,6 +171,16 @@ class PostServiceTest {
   @WithMockCustomUser(userId = 2)
   void 타인_게시글_삭제() {
     // given
+    User user = userRepository.findById(1L).get();
+    Post post = Post.builder()
+        .title("test title")
+        .content("test content")
+        .isDeleted(false)
+        .build();
+
+    post.addUser(user);
+    postRepository.save(post);
+
     UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
         .getPrincipal();
 
@@ -175,6 +205,16 @@ class PostServiceTest {
   @WithMockCustomUser(userId = 2)
   void 타인_게시글_수정() {
     // given
+    User user = userRepository.findById(1L).get();
+    Post post = Post.builder()
+        .title("test title")
+        .content("test content")
+        .isDeleted(false)
+        .build();
+
+    post.addUser(user);
+    postRepository.save(post);
+
     UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
         .getPrincipal();
 

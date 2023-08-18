@@ -39,7 +39,7 @@ public class CommentRepositoryImpl implements CommentCustomRepository {
   }
 
   @Override
-  public List<Comment> readReplyNoOffset(Long postId, Long commentId, CommentPageSearch commentPageSearch) {
+  public List<Comment> readReplyNoOffset(Long postId, Long parentCommentId, CommentPageSearch commentPageSearch) {
     Long lastRecordId = commentPageSearch.getLastRecordId();
 
     BooleanBuilder dynamicLtId = new BooleanBuilder();
@@ -55,10 +55,10 @@ public class CommentRepositoryImpl implements CommentCustomRepository {
         .join(QComment.comment.post).fetchJoin()
         .where(dynamicLtId.and(QComment.comment.isDeleted.eq(false))
             .and(QComment.comment.post.id.eq(postId))
-            .and(QComment.comment.parentComment.id.eq(commentId))
+            .and(QComment.comment.parentComment.id.eq(parentCommentId))
             .and(QComment.comment.replyDepth.eq(1)))
         .orderBy(QComment.comment.id.desc())
-        .limit(5)
+        .limit(commentPageSearch.getSize())
         .fetch();
   }
 }

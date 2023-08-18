@@ -58,9 +58,10 @@ public class Comment extends BaseEntity {
   private List<Comment> childComments = new ArrayList<>();
 
   @Builder
-  public Comment(String content, boolean isDeleted) {
+  public Comment(String content, boolean isDeleted, int replyDepth) {
     this.content = content;
     this.isDeleted = isDeleted;
+    this.replyDepth = replyDepth;
   }
 
   public boolean checkDepth() {
