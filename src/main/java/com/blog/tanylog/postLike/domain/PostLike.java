@@ -22,8 +22,6 @@ public class PostLike {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  private boolean isLiked;
-
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "post_id")
   private Post post;
@@ -31,4 +29,16 @@ public class PostLike {
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "user_id")
   private User user;
+
+  public void addUser(User user) {
+    this.user = user;
+  }
+
+  public void addPost(Post post) {
+    this.post = post;
+  }
+
+  public static PostLike createPostLike() {
+    return new PostLike();
+  }
 }
