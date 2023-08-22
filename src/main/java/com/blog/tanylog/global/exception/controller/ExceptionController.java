@@ -2,6 +2,8 @@ package com.blog.tanylog.global.exception.controller;
 
 import com.blog.tanylog.global.exception.controller.dto.ExceptionResponse;
 import com.blog.tanylog.global.exception.domain.GlobalException;
+import java.sql.SQLIntegrityConstraintViolationException;
+import org.hibernate.StaleStateException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -39,5 +41,27 @@ public class ExceptionController {
     }
 
     return response;
+  }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(SQLIntegrityConstraintViolationException.class)
+  public ResponseEntity<ExceptionResponse> uniqueSaveValid() {
+    ExceptionResponse response = ExceptionResponse.builder()
+        .code(500)
+        .message("중복된 좋아요 등록 요청입니다.")
+        .build();
+
+    return ResponseEntity.status(500).body(response);
+  }
+
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  @ExceptionHandler(StaleStateException.class)
+  public ResponseEntity<ExceptionResponse> uniqueDeleteValid() {
+    ExceptionResponse response = ExceptionResponse.builder()
+        .code(500)
+        .message("중복된 좋아요 삭제 요청입니다.")
+        .build();
+
+    return ResponseEntity.status(500).body(response);
   }
 }
