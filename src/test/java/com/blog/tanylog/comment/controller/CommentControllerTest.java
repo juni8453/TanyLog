@@ -99,7 +99,6 @@ class CommentControllerTest {
   @WithMockCustomUser
   void 댓글_수정_내용_유효성_검사() throws Exception {
     // given
-    Long postId = 1L;
     Long commentId = 1L;
 
     CommentUpdateRequest request = CommentUpdateRequest.builder()
@@ -107,7 +106,7 @@ class CommentControllerTest {
         .build();
 
     // when, then
-    mockMvc.perform(put("/posts/{postId}/comments/{commentId}", postId, commentId)
+    mockMvc.perform(put("/comments/{commentId}", commentId)
             .with(csrf())
             .contentType(MediaType.APPLICATION_JSON)
             .content(mapper.writeValueAsString(request)))

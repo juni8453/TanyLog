@@ -1,7 +1,7 @@
 package com.blog.tanylog.postLike.controller;
 
 import com.blog.tanylog.config.security.UserContext;
-import com.blog.tanylog.postLike.controller.dto.request.PostLikeSaveRequest;
+import com.blog.tanylog.postLike.controller.dto.request.PostLikeRequest;
 import com.blog.tanylog.postLike.service.PostLikeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -19,8 +19,8 @@ public class PostLikeController {
   @PostMapping("/posts/{postId}/like")
   public void save(@PathVariable Long postId,
       @AuthenticationPrincipal UserContext userContext,
-      @RequestBody PostLikeSaveRequest request) {
+      @RequestBody PostLikeRequest request) {
 
-    postLikeService.save(postId, userContext, request);
+    postLikeService.saveOrDelete(postId, userContext, request);
   }
 }
