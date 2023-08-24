@@ -21,7 +21,7 @@ class PagingTest {
   @DisplayName("Offset 방식으로 게시글 전체 조회 API 페이징 성능을 테스트합니다.")
   void 게시글_전체조회_Offset() {
     // given
-    PageSearch pageSearch = new PageSearch(1L, 4000, 20);
+    PageSearch pageSearch = new PageSearch(null, 4000, 20, "", "");
 
     // when
     long startTime = System.currentTimeMillis();
@@ -38,7 +38,7 @@ class PagingTest {
   @DisplayName("No - Offset 방식으로 게시글 전체 조회 API 페이징 성능을 테스트합니다.")
   void 게시글_전체조회_No_Offset() {
     // given
-    PageSearch pageSearch = new PageSearch(5000L, 1, 20);
+    PageSearch pageSearch = new PageSearch(5000L, 1, 20, "", "");
 
     // when
     long startTime = System.currentTimeMillis();
