@@ -63,4 +63,12 @@ public class PostController {
 
     return ResponseEntity.ok(response);
   }
+
+  @GetMapping("/posts/my_posts")
+  public ResponseEntity<PostMultiReadResponse> readMyPosts(@ModelAttribute PageSearch pageSearch,
+      @AuthenticationPrincipal UserContext userContext) {
+    PostMultiReadResponse response = postService.readMyPosts(pageSearch, userContext);
+
+    return ResponseEntity.ok(response);
+  }
 }
