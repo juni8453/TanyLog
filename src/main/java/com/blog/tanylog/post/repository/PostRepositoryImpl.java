@@ -1,5 +1,6 @@
 package com.blog.tanylog.post.repository;
 
+import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.post.controller.dto.request.PageSearch;
 import com.blog.tanylog.post.domain.Post;
 import com.blog.tanylog.post.domain.QPost;
@@ -95,6 +96,19 @@ public class PostRepositoryImpl implements PostCustomRepository {
         .where(dynamicLtId.and(QPost.post.isDeleted.eq(false)))
         .orderBy(QPost.post.id.desc())
         .limit(pageSearch.getSize())
+        .fetch();
+  }
+
+  @Override
+  public List<Post> readMyPosts(PageSearch pageSearch, UserContext userContext) {
+    return jpaQueryFactory.selectFrom(QPost.post)
+        .join(QPost.post.user)
+        .fetchJoin()
+        .where(QPost.post.isDeleted.eq(false),
+            QPost.post.user.id.eq(userContext.getSessionUser().getUserId()))
+        .limit(pageSearch.getSize())
+        .offset(pageSearch.getOffset())
+        .orderBy(QPost.post.id.desc())
         .fetch();
   }
 }

@@ -2,6 +2,7 @@ package com.blog.tanylog.post.controller;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -62,6 +63,15 @@ class PostControllerTest {
     Long postId = 1L;
 
     mockMvc.perform(put("/posts/{postId}", postId)
+            .with(csrf()))
+        .andDo(print())
+        .andExpect(status().is3xxRedirection());
+  }
+
+  @Test
+  @DisplayName("비회원 상태로 내 게시물을 확인할 수는 없습니다.")
+  void 비회원_본인_게시글_조회_Redirect() throws Exception {
+    mockMvc.perform(get("/posts/my_posts")
             .with(csrf()))
         .andDo(print())
         .andExpect(status().is3xxRedirection());

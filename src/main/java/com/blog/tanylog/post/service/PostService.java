@@ -125,8 +125,26 @@ public class PostService {
   @Transactional(readOnly = true)
   public PostMultiReadResponse readAll(PageSearch pageSearch) {
     List<Post> offset = postRepository.readAll(pageSearch);
+    List<PostSingleReadResponse> response = postToSingleReadResponse(offset);
 
-    List<PostSingleReadResponse> response = offset.stream()
+    return PostMultiReadResponse
+        .builder()
+        .postsResponse(response)
+        .build();
+  }
+
+  @Transactional(readOnly = true)
+  public PostMultiReadResponse readMyPosts(PageSearch pageSearch, UserContext userContext) {
+    List<Post> myPosts = postRepository.readMyPosts(pageSearch, userContext);
+    List<PostSingleReadResponse> response = postToSingleReadResponse(myPosts);
+
+    return PostMultiReadResponse.builder()
+        .postsResponse(response)
+        .build();
+  }
+
+  private List<PostSingleReadResponse> postToSingleReadResponse(List<Post> posts) {
+    return posts.stream()
         .map(post -> PostSingleReadResponse.builder()
             .id(post.getId())
             .title(post.getTitle())
@@ -140,10 +158,5 @@ public class PostService {
                 .build())
             .build())
         .collect(Collectors.toList());
-
-    return PostMultiReadResponse
-        .builder()
-        .postsResponse(response)
-        .build();
   }
 }
