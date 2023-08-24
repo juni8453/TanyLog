@@ -8,8 +8,10 @@ import com.blog.tanylog.config.WithMockCustomUser;
 import com.blog.tanylog.config.security.UserContext;
 import com.blog.tanylog.global.exception.domain.OtherUserDeleteException;
 import com.blog.tanylog.global.exception.domain.OtherUserUpdateException;
+import com.blog.tanylog.post.controller.dto.request.PageSearch;
 import com.blog.tanylog.post.controller.dto.request.PostSaveRequest;
 import com.blog.tanylog.post.controller.dto.request.PostUpdateRequest;
+import com.blog.tanylog.post.controller.dto.response.PostMultiReadResponse;
 import com.blog.tanylog.post.controller.dto.response.PostSingleReadResponse;
 import com.blog.tanylog.post.domain.Post;
 import com.blog.tanylog.post.repository.PostRepository;
@@ -17,6 +19,8 @@ import com.blog.tanylog.user.domain.Role;
 import com.blog.tanylog.user.domain.User;
 import com.blog.tanylog.user.repository.UserRepository;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -78,6 +82,37 @@ class PostServiceTest {
     // then
     List<Post> findPosts = postRepository.findAll();
     assertThat(findPosts.size()).isEqualTo(1);
+  }
+
+  @Test
+  @DisplayName("USER 권한의 유저는 자신이 작성한 게시글을 조회할 수 있습니다.")
+  @WithMockCustomUser
+  void 본인_게시글_조회() {
+    // given
+    PageSearch pageSearch = new PageSearch(null, 1, 5, "", "");
+
+    UserContext userContext = (UserContext) SecurityContextHolder.getContext().getAuthentication()
+        .getPrincipal();
+
+    List<PostSaveRequest> requests = IntStream.range(0, 20)
+        .mapToObj(i -> PostSaveRequest.builder()
+            .title("test title - " + i)
+            .content("test content - " + i)
+            .isDeleted(false)
+            .build())
+        .collect(Collectors.toList());
+
+    for (PostSaveRequest postSaveRequest : requests) {
+      postService.save(userContext, postSaveRequest);
+    }
+
+    // when
+    PostMultiReadResponse response = postService.readMyPosts(pageSearch, userContext);
+
+    // then
+    assertThat(response).isNotNull();
+    assertThat(response.getPostsResponse().size()).isEqualTo(5);
+    assertThat(response.getPostsResponse().get(0).getId()).isEqualTo(20L);
   }
 
   @Test
