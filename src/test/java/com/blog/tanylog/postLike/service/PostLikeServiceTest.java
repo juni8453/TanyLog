@@ -77,7 +77,7 @@ class PostLikeServiceTest {
 
     Long postId = 1L;
 
-    PostLikeRequest request = PostLikeRequest.builder().isLiked(false).build();
+    PostLikeRequest request = PostLikeRequest.builder().liked(false).build();
 
     // when
     postLikeService.saveOrDelete(postId, userContext, request);
@@ -101,9 +101,9 @@ class PostLikeServiceTest {
 
     Long postId = 1L;
 
-    PostLikeRequest saveRequest = PostLikeRequest.builder().isLiked(false).build();
+    PostLikeRequest saveRequest = PostLikeRequest.builder().liked(false).build();
 
-    PostLikeRequest cancelRequest = PostLikeRequest.builder().isLiked(true).build();
+    PostLikeRequest cancelRequest = PostLikeRequest.builder().liked(true).build();
 
     postLikeService.saveOrDelete(postId, userContext, saveRequest);
 

@@ -16,7 +16,7 @@ class PostLikeRequestTest {
     PostLike postLike = PostLike.createPostLike();
 
     PostLikeRequest request = PostLikeRequest.builder()
-        .isLiked(false)
+        .liked(false)
         .build();
 
     // when, then
@@ -30,7 +30,7 @@ class PostLikeRequestTest {
     PostLike postLike = null;
 
     PostLikeRequest request = PostLikeRequest.builder()
-        .isLiked(true)
+        .liked(true)
         .build();
 
     // when, then
