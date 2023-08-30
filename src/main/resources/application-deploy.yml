@@ -1,7 +1,7 @@
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mariadb://tanylog-main-db.c77gzgzeefpd.ap-northeast-2.rds.amazonaws.com:3306/blog
+    url: jdbc:mysql://tanylog-main-db.c77gzgzeefpd.ap-northeast-2.rds.amazonaws.com:3306/blog
     username: tany
     password: wjsqudwns1!
     initialization-mode: always
