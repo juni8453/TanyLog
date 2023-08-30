@@ -19,7 +19,7 @@ spring:
       client:
         registration:
           kakao:
-            clientId: oauth_kakao_clientId
+            clientId: 48ea5aa5d8f06270230758e2dfd936fa
             clientSecret: oauth_kakao_clientSecret
             redirectUri: oauth_kakao_redirectUri
             authorizationGrantType: authorization_code
@@ -31,7 +31,7 @@ spring:
               - account_email
 
           naver:
-            clientId: oauth_naver_clientId
+            clientId: 0cAtGfyWRxWLilxdIGOH
             clientSecret: oauth_naver_clientSecret
             redirectUri: oauth_naver_redirectUri
             authorizationGrantType: authorization_code
