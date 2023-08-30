@@ -18,20 +18,20 @@ spring:
     oauth2:
       client:
         registration:
-          kakao:
-            clientId: 48ea5aa5d8f06270230758e2dfd936fa
-            clientSecret: oauth_kakao_clientSecret
-            redirectUri: oauth_kakao_redirectUri
-            authorizationGrantType: authorization_code
-            client-authentication-method: POST
-            clientName: Kakao
-            scope:
-              - profile_nickname
-              - profile_image
-              - account_email
+#          kakao:
+#            clientId: oauth_kakao_clientId
+#            clientSecret: oauth_kakao_clientSecret
+#            redirectUri: oauth_kakao_redirectUri
+#            authorizationGrantType: authorization_code
+#            client-authentication-method: POST
+#            clientName: Kakao
+#            scope:
+#              - profile_nickname
+#              - profile_image
+#              - account_email
 
           naver:
-            clientId: 0cAtGfyWRxWLilxdIGOH
+            clientId: oauth_naver_clientId
             clientSecret: oauth_naver_clientSecret
             redirectUri: oauth_naver_redirectUri
             authorizationGrantType: authorization_code
