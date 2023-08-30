@@ -1,0 +1,59 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: datasource_url
+    username: datasource_username
+    password: datasource_password
+    initialization-mode: always
+
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: none
+
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        show_sql: true
+        format_sql: true
+        default_batch_fetch_size: 100
+
+  security:
+    oauth2:
+      client:
+        registration:
+          kakao:
+            clientId: oauth_kakao_clientId
+            clientSecret: oauth_kakao_clientSecret
+            redirectUri: oauth_kakao_redirectUri
+            authorizationGrantType: authorization_code
+            client-authentication-method: POST
+            clientName: Kakao
+            scope:
+              - profile_nickname
+              - profile_image
+              - account_email
+
+          naver:
+            clientId: oauth_naver_clientId
+            clientSecret: oauth_naver_clientSecret
+            redirectUri: oauth_naver_redirectUri
+            authorizationGrantType: authorization_code
+            clientName: Naver
+            scope:
+              - name
+              - email
+              - profile_image
+
+        provider:
+          kakao:
+            authorizationUri: oauth_kakao_authorizationUri
+            tokenUri: oauth_kakao_tokenUri
+            userInfoUri: oauth_kakao_userInfoUri
+            userNameAttribute: id
+
+          naver:
+            authorizationUri: oauth_naver_authorizationUri
+            tokenUri: oauth_naver_tokenUri
+            userInfoUri: oauth_naver_userInfoUri
+            userNameAttribute: response
