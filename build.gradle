@@ -53,6 +53,16 @@ tasks.named('test') {
 	useJUnitPlatform()
 }
 
+jar {
+	enabled = false
+}
+
+bootJar {
+	archivesBaseName = 'app'
+	archiveFileName = 'app.jar'
+	archiveVersion = "0.0.0"
+}
+
 // compileJava -> test -> asciidoctor -> bootJar 순으로 실행
 
 // gradle은 build/generated-snippets에 스니펫이 생성되므로, 스니펫 생성 디렉토리를 변수에 담는다.
