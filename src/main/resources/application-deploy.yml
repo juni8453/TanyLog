@@ -1,9 +1,9 @@
 spring:
   datasource:
-    driver-class-name: org.mariadb.jdbc.Driver
-    url: datasource_url
-    username: datasource_username
-    password: datasource_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mariadb://tanylog-main-db.c77gzgzeefpd.ap-northeast-2.rds.amazonaws.com:3306
+    username: tany
+    password: wjsqudwns1!
     initialization-mode: always
 
   thymeleaf:
