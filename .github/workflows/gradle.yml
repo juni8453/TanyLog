@@ -24,34 +24,43 @@ jobs:
       - name: Insert data source information and OAuth2 information into application-deploy.yml
         run: |
           cd src
-          sed -i "s|datasource_url|$DATASOURCE_URL|g" /main/resources/application-deploy.yml
-          sed -i "s|datasource_username|$DATASOURCE_USERNAME|g" /main/resources/application-deploy.yml
-          sed -i "s|datasource_password|$DATASOURCE_PASSWORD|g" /main/resources/application-deploy.yml
+          sed -i "s|datasource_url|$DATASOURCE_URL|g" main/resources/application-deploy.yml
+          sed -i "s|datasource_username|$DATASOURCE_USERNAME|g" main/resources/application-deploy.yml
+          sed -i "s|datasource_password|$DATASOURCE_PASSWORD|g" main/resources/application-deploy.yml
 
-          sed -i "s|oauth_kakao_clientId|$OAUTH_KAKAO_CLIENTID|g" /main/resources/application-deploy.yml
-          sed -i "s|oauth_kakao_clientSecret|$OAUTH_KAKAO_CLIENTSECRET|g" /main/resources/application-deploy.yml
-          sed -i "s|oauth_kakao_redirectUri|$OAUTH_KAKAO_REDIRECTURI|g" /main/resources/application-deploy.yml
+          sed -i "s|oauth_kakao_clientId|$OAUTH_KAKAO_CLIENTID|g" main/resources/application-deploy.yml
+          sed -i "s|oauth_kakao_clientSecret|$OAUTH_KAKAO_CLIENTSECRET|g" main/resources/application-deploy.yml
+          sed -i "s|oauth_kakao_redirectUri|$OAUTH_KAKAO_REDIRECTURI|g" main/resources/application-deploy.yml
 
-          sed -i "s|oauth_naver_clientId|$OAUTH_NAVER_CLIENTID|g" /main/resources/application-deploy.yml
-          sed -i "s|oauth_naver_clientSecret|$OAUTH_NAVER_CLIENTSECRET|g" /main/resources/application-deploy.yml
-          sed -i "s|oauth_naver_redirectUri|$OAUTH_NAVER_REDIRECTURI|g" /main/resources/application-deploy.yml
-
-      - name: Insert test OAuth2 information into application.yml
-        run: |
-          cd src
-          sed -i "s|oauth_kakao_clientId|$OAUTH_KAKAO_CLIENTID|g" /test/resources/application.yml
-          sed -i "s|oauth_kakao_clientSecret|$OAUTH_KAKAO_CLIENTSECRET|g" /test/resources/application.yml
-          sed -i "s|oauth_kakao_redirectUri|$OAUTH_KAKAO_REDIRECTURI|g" /test/resources/application.yml
-
-          sed -i "s|oauth_naver_clientId|$OAUTH_NAVER_CLIENTID|g" /test/resources/application.yml
-          sed -i "s|oauth_naver_clientSecret|$OAUTH_NAVER_CLIENTSECRET|g" /test/resources/application.yml
-          sed -i "s|oauth_naver_redirectUri|$OAUTH_NAVER_REDIRECTURI|g" /test/resources/application.yml
+          sed -i "s|oauth_naver_clientId|$OAUTH_NAVER_CLIENTID|g" main/resources/application-deploy.yml
+          sed -i "s|oauth_naver_clientSecret|$OAUTH_NAVER_CLIENTSECRET|g" main/resources/application-deploy.yml
+          sed -i "s|oauth_naver_redirectUri|$OAUTH_NAVER_REDIRECTURI|g" main/resources/application-deploy.yml
 
         env:
           DATASOURCE_URL : ${{ secrets.DATASOURCE_URL }}
           DATASOURCE_USERNAME : ${{ secrets.DATASOURCE_USERNAME }}
           DATASOURCE_PASSWORD : ${{ secrets.DATASOURCE_PASSWORD }}
 
+          OAUTH_KAKAO_CLIENTID : ${{ secrets.OAUTH_KAKAO_CLIENTID }}
+          OAUTH_KAKAO_CLIENTSECRET : ${{ secrets.OAUTH_KAKAO_CLIENTSECRET }}
+          OAUTH_KAKAO_REDIRECTURI : ${{ secrets.OAUTH_KAKAO_REDIRECTURI }}
+
+          OAUTH_NAVER_CLIENTID: ${{ secrets.OAUTH_NAVER_CLIENTID }}
+          OAUTH_NAVER_CLIENTSECRET: ${{ secrets.OAUTH_NAVER_CLIENTSECRET }}
+          OAUTH_NAVER_REDIRECTURI: ${{ secrets.OAUTH_NAVER_REDIRECTURI }}
+
+      - name: Insert test OAuth2 information into application.yml
+        run: |
+          cd src
+          sed -i "s|oauth_kakao_clientId|$OAUTH_KAKAO_CLIENTID|g" test/resources/application.yml
+          sed -i "s|oauth_kakao_clientSecret|$OAUTH_KAKAO_CLIENTSECRET|g" test/resources/application.yml
+          sed -i "s|oauth_kakao_redirectUri|$OAUTH_KAKAO_REDIRECTURI|g" test/resources/application.yml
+
+          sed -i "s|oauth_naver_clientId|$OAUTH_NAVER_CLIENTID|g" test/resources/application.yml
+          sed -i "s|oauth_naver_clientSecret|$OAUTH_NAVER_CLIENTSECRET|g" test/resources/application.yml
+          sed -i "s|oauth_naver_redirectUri|$OAUTH_NAVER_REDIRECTURI|g" test/resources/application.yml
+
+        env:
           OAUTH_KAKAO_CLIENTID : ${{ secrets.OAUTH_KAKAO_CLIENTID }}
           OAUTH_KAKAO_CLIENTSECRET : ${{ secrets.OAUTH_KAKAO_CLIENTSECRET }}
           OAUTH_KAKAO_REDIRECTURI : ${{ secrets.OAUTH_KAKAO_REDIRECTURI }}
