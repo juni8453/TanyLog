@@ -88,5 +88,5 @@ jobs:
             sudo docker ps -a -q --filter "name=tanylog" | grep -q . && docker stop tanylog && docker rm tanylog | true
             sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/tanylog:1.0
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/tanylog:1.0
-            sudo docker run -d -p 80:8080 -e PROFILES=deploy --name tanylog ${{ secrets.DOCKER_USERNAME }}/tanylog
+            sudo docker run -d -p 80:8080 -e PROFILES=deploy --name tanylog ${{ secrets.DOCKER_USERNAME }}/tanylog:1.0
             sudo docker rmi -f $(docker images -f "dangling=true" -q) || true
