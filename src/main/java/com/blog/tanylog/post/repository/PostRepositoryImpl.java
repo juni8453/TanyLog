@@ -40,13 +40,14 @@ public class PostRepositoryImpl implements PostCustomRepository {
 
     // in 절은 정렬을 보장하지 않기 때문에 order by 필요
     return jpaQueryFactory.selectFrom(QPost.post)
+        .join(QPost.post.user).fetchJoin()
         .where(QPost.post.id.in(postIds))
         .orderBy(QPost.post.id.desc())
         .fetch();
   }
 
   private BooleanExpression createSearchPredicate(String searchType, String keyword) {
-    BooleanExpression predicate = QPost.post.id.isNotNull(); // 기본적으로 검색 결과 없음
+    BooleanExpression predicate = null; // 기본적으로 검색 결과 없음
 
     if ("TITLE".equalsIgnoreCase(searchType)) {
       predicate = createTitlePredicate(keyword);
@@ -61,12 +62,12 @@ public class PostRepositoryImpl implements PostCustomRepository {
     return predicate;
   }
 
-  private BooleanExpression createUserPredicate(String keyword) {
-    if (!StringUtils.hasText(keyword)) {
+  private BooleanExpression createUserPredicate(String usernamePattern) {
+    if (!StringUtils.hasText(usernamePattern)) {
       return null; // 검색 조건이 없으면 null 반환
     }
 
-    return QPost.post.user.name.startsWith(keyword);
+    return QPost.post.user.name.like(usernamePattern + "%");
   }
 
   private BooleanExpression createTitlePredicate(String titlePattern) {
@@ -74,7 +75,7 @@ public class PostRepositoryImpl implements PostCustomRepository {
       return null; // 검색 조건이 없으면 null 반환
     }
 
-    return QPost.post.title.startsWith(titlePattern);
+    return QPost.post.title.like(titlePattern + "%");
   }
 
   private BooleanExpression createContentPredicate(String contentPattern) {
@@ -82,7 +83,7 @@ public class PostRepositoryImpl implements PostCustomRepository {
       return null; // 검색 조건이 없으면 null 반환
     }
 
-    return QPost.post.content.startsWith(contentPattern);
+    return QPost.post.content.like(contentPattern + "%");
   }
 
   @Override
