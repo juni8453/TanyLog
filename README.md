@@ -8,6 +8,53 @@
 
 <br>
 
+### 기능 구현
+**Back-end**
+
+- 로그인 구현 **[(포스팅)](https://www.notion.so/OAuth2-0-a63bef8660124f729b0e702e5388d35c?pvs=21)**
+    - Spring Security + OAuth2 + Session, Cookie 방식 로그인 구현
+- API 명세서 작성 **[(포스팅)](https://www.notion.so/Spring-Rest-Docs-API-7e692625f8fc4faeb46225718a4f9b8a?pvs=21)**
+    - Spring Rest Docs 를 활용해 API 명세서 작성
+- 게시글 CRUD API **[(포스팅)](https://www.notion.so/CRUD-c116ae9be9ea497f80a02a181a80b8fb?pvs=21)**
+    - 게시글 전체 조회
+        - OFFSET 방식으로 Paging 처리되도록 구현
+        - Querydsl 을 활용해 Paging, Search 값이 동적으로 활용될 수 있도록 구현 **[(포스팅)](https://www.notion.so/JPQL-Querydsl-Paging-c5a5bececf7a4fba848db18c885494f0?pvs=21)**
+    - 내가 작성한 게시글 전체 조회
+        - 다른 조회 API 와는 다르게 비로그인 상태에서 API 호출 시 로그인 페이지로 Redirect 되도록 구현
+    - 게시글 삭제
+        - 게시글 삭제 시 Soft Delete 되도록 구현
+    - 게시글 검색
+        - 제목, 내용, 닉네임으로 게시글을 검색할 수 있도록 구현
+- 댓글 CRUD API **[(포스팅)](https://www.notion.so/CRUD-aa8268333bba4ea18732577ac6751c97?pvs=21)**
+    - 댓글 조회
+        - 한 게시물의 상위 댓글 조회 시 NO OFFSET 방식으로 Paging 처리되도록 구현
+        - 상위 댓글의 하위 댓글 목록은 OFFSET 방식으로 Paging 처리되도록 구현
+    - 댓글, 대댓글 등록
+        - 대댓글은 하나 이상 등록하지 못하도록 구현
+- 게시글 좋아요 API **[(포스팅)](https://www.notion.so/API-8c4997d53eb84635a147a364341a62fc?pvs=21)**
+    - API 호출 시 한 유저가 동시 요청을 보내는 상황 제어할 수 있도록 구현 **[(포스팅)](https://www.notion.so/cc55c11e313c47569165a0a7993f1a65?pvs=21)**
+- Junit5 를 활용해 Controller, Service 테스트 코드 작성
+    - 게시글
+        
+        [게시글 CRUD Controller 테스트 작성](https://www.notion.so/CRUD-Controller-cdc4634a34c94383af7b20624b158d8f?pvs=21)
+        
+        [게시글 CRUD Service 테스트 작성](https://www.notion.so/CRUD-Service-390e12e9dbea435e84666bbbd25446be?pvs=21)
+        
+    - 댓글
+        
+        [댓글 CRUD Controller 테스트 작성](https://www.notion.so/CRUD-Controller-b23756a17d9846b9acb146aedd158ca1?pvs=21)
+        
+        [댓글 CRUD Service 테스트 작성](https://www.notion.so/CRUD-Service-a33f890951ff42deb41191f85248fcbe?pvs=21)
+        
+        [댓글 CRUD Service 테스트 작성](https://www.notion.so/CRUD-Service-1a22eb27fc88491182beb01a90f761b8?pvs=21)
+        
+- nGrinder 를 활용해 API 성능 테스트 실시 **[(포스팅)](https://www.notion.so/nGrinder-b37faa8ae91f4735bc27dc82a5afebaf?pvs=21)**
+    - 커버링 인덱스를 적용해 성능 개선 **[(포스팅)](https://www.notion.so/798967c754a64938928dd59836fce803?pvs=21)**
+
+
+
+<br>
+
 ### ⚒ 사용 기술 스택
 
 ---
