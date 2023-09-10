@@ -2,7 +2,6 @@
 #### 💁🏻 `프로젝트명` Tanylog API
 #### 📆 `기간` 2023.07.26 ~ 2023.09.07
 #### 📝 [한 눈에 보는 프로젝트 Notion 문서](https://concrete-blanket-9f9.notion.site/API-dc1a77668287447fa62575f273720631?pvs=4)
-#### 📝 [Spring Rest Docs](http://15.165.146.174/docs/index.html)
 
 <br>
 
