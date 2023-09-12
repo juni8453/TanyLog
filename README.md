@@ -2,8 +2,15 @@
 #### 💁🏻 `프로젝트명` Tanylog API
 #### 📆 `기간` 2023.07.26 ~ 2023.09.07
 #### 📝 [한 눈에 보는 프로젝트 Notion 문서](https://concrete-blanket-9f9.notion.site/API-dc1a77668287447fa62575f273720631?pvs=4)
+#### 📝 [Rest Docs 명세서 링크](http://15.165.146.174/docs/index.html)
 
-<br>
+</br>
+
+### 🌐 배포 프로세스
+---
+![배포 그림](https://github.com/juni8453/Tanylog/assets/79444040/691e773d-55b4-4fb4-ad51-6c388abcf3bd)
+
+</br>
 
 ### 💁🏻 기능 구현
 ---
@@ -18,27 +25,42 @@
 </br>
 
 - 게시글 CRUD API **[(포스팅)](https://concrete-blanket-9f9.notion.site/CRUD-c116ae9be9ea497f80a02a181a80b8fb?pvs=4)**
-    - 게시글 전체 조회
+    - `게시글 전체 조회`
+        - **[게시글 전체 조회시퀀스 다이어그램](https://www.notion.so/1e13730fe5a34f3989dfeaca5f70be1a?pvs=4)**     
         - OFFSET 방식으로 Paging 처리되도록 구현
         - Querydsl 을 활용해 Paging, Search 값이 동적으로 활용될 수 있도록 구현 **[(포스팅)](https://concrete-blanket-9f9.notion.site/JPQL-Querydsl-Paging-c5a5bececf7a4fba848db18c885494f0?pvs=4)**
-    - 내가 작성한 게시글 전체 조회
+    - `내가 작성한 게시글 전체 조회`
+        - **[내가 작성한 게시글 전체 조회 시퀀스 다이어그램](https://www.notion.so/a383060c18df4a5194227cdc639e14a9?pvs=4)**     
         - 다른 조회 API 와는 다르게 비로그인 상태에서 API 호출 시 로그인 페이지로 Redirect 되도록 구현
-    - 게시글 삭제
+    - `게시글 삭제`
+        - **[게시글 삭제 시퀀스 다이어그램](https://www.notion.so/4e16cab4580641eaa527cd1a88379111?pvs=4)**     
         - 게시글 삭제 시 Soft Delete 되도록 구현
-    - 게시글 검색
+    - `게시글 등록`
+        - **[게시글 등록 시퀸스 다이어그램](https://www.notion.so/c06bd34707cd4318a018830a1b71ddf6?pvs=4)** 
+    - `게시글 수정`
+        - **[게시글 수정 시퀸스 다이어그램](https://www.notion.so/6fc82f436b1942639982dbf72383c43e?pvs=4)** 
+    - `게시글 검색`
         - 제목, 내용, 닉네임으로 게시글을 검색할 수 있도록 구현
 </br>
 
 - 댓글 CRUD API **[(포스팅)](https://concrete-blanket-9f9.notion.site/CRUD-aa8268333bba4ea18732577ac6751c97?pvs=4)**
-    - 댓글 조회
+    - `댓글 조회`
+        - **[댓글 조회 시퀸스 다이어그램](https://www.notion.so/48d25df440f2458abcd78b7baa2e9750?pvs=4)** 
         - 한 게시물의 상위 댓글 조회 시 NO OFFSET 방식으로 Paging 처리되도록 구현
         - 상위 댓글의 하위 댓글 목록은 OFFSET 방식으로 Paging 처리되도록 구현
-    - 댓글, 대댓글 등록
+    - `댓글 삭제`
+        - **[댓글 삭제 시퀸스 다이어그램](https://www.notion.so/4e16cab4580641eaa527cd1a88379111?pvs=4)**  
+    - `댓글 등록`
+        - **[댓글 등록 시퀀스 다이어그램](https://www.notion.so/5412ac0ddb5f46ae8844cb16738f93ce?pvs=4)** 
         - 대댓글은 하나 이상 등록하지 못하도록 구현
+    - `댓글 수정`
+        - **[댓글 수정 시퀀스 다이어그램](https://www.notion.so/ca7b637d8b654fa3a08a9ba5bcb015a3?pvs=4)** 
 </br>
 
 - 게시글 좋아요 API **[(포스팅)](https://concrete-blanket-9f9.notion.site/API-8c4997d53eb84635a147a364341a62fc?pvs=4)**
     - API 호출 시 한 유저가 동시 요청을 보내는 상황 제어할 수 있도록 구현 **[(포스팅)](https://concrete-blanket-9f9.notion.site/cc55c11e313c47569165a0a7993f1a65?pvs=4)**
+ </br>
+ 
 - Junit5 를 활용해 Controller, Service 테스트 코드 작성
     - [게시글 CRUD Controller 테스트 작성](https://concrete-blanket-9f9.notion.site/CRUD-Controller-e7407bbc40414661968f42ec72eb2974?pvs=4)
     - [게시글 CRUD Service 테스트 작성](https://concrete-blanket-9f9.notion.site/CRUD-Service-2ef18de798804efa9e911e35048ffbe4?pvs=4)
@@ -89,8 +111,8 @@
 - Java 11
 - Gradle
 - MySQL 8
-- Spring Boot
-- Spring Data JPA
+- Spring Boot 2.X
+- Spring Data JPA (Hibernate)
 - Querydsl
 - Spring Security
 - Spring Rest Docs
