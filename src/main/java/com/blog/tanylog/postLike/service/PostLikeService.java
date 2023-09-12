@@ -27,17 +27,17 @@ public class PostLikeService {
   public void saveOrDelete(Long postId, UserContext userContext, PostLikeRequest request) {
     Long userId = userContext.getSessionUser().getUserId();
 
-    Optional<PostLike> findPostLike = postLikeRepository.findPostLikeByPostIdAndUserId(
-        postId, userId);
-
-    // 클라이언트에서 실수할수도 있으니 이중 검증
-    request.validate(findPostLike.orElse(null));
-
     User loginUser = userRepository.findById(userId)
         .orElseThrow(UserNotFound::new);
 
     Post findPost = postRepository.findById(postId)
         .orElseThrow(PostNotFound::new);
+
+    Optional<PostLike> findPostLike = postLikeRepository.findPostLikeByPostIdAndUserId(
+        postId, userId);
+
+    // 클라이언트에서 실수할수도 있으니 이중 검증
+    request.validate(findPostLike.orElse(null));
 
     if (request.isLiked()) {
       findPostLike.ifPresent(postLikeRepository::delete);

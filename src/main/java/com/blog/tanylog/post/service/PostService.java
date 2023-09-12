@@ -94,15 +94,15 @@ public class PostService {
    */
   @Transactional(readOnly = true)
   public PostSingleReadResponse read(Long postId, UserContext userContext) {
+    Post findPost = postRepository.findByPostId(postId)
+        .orElseThrow(PostNotFound::new);
+
     boolean isLiked = false;
 
     if (userContext != null) {
       isLiked = postLikeRepository.findPostLikeByPostIdAndUserId(postId,
           userContext.getSessionUser().getUserId()).isPresent();
     }
-
-    Post findPost = postRepository.findByPostId(postId)
-        .orElseThrow(PostNotFound::new);
 
     User user = findPost.getUser();
     PostWriterResponse writer = PostWriterResponse.builder()
